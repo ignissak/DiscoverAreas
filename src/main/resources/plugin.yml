@@ -1,0 +1,9 @@
+name: DiscoverAreas
+version: @version@
+main: net.ignissak.discoverareas.DiscoverMain
+api-version: 1.13
+depend: [WorldGuard]
+authors: [iGniSsak]
+commands:
+  area:
+    usage: /<command>

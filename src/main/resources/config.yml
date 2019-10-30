@@ -1,0 +1,28 @@
+title:
+  on_discover:
+    enabled: true
+    title: "&a&l@area"
+    subtitle: "&f@description"
+    # Values are in seconds
+    fadein: 1
+    stay: 3
+    fadeout: 1
+
+messages:
+  help:
+    - "&6&lDiscoverAreas Help"
+    - "&e/area &8- &7shows this help"
+    - "&e/area create <region> <name> &8- &7creates new discoverable area"
+    - "&e/area delete <name> &8- &7removes a discoverable area"
+    - "&e/area setexp <name> <amount> &8- &7sets xp reward for area"
+    - "&e/area reset [player] &8- &7removes yours/player's progress"
+    - "&e/area setdesc <name> &8- &7sets area's new description"
+  on_discover:
+    enabled: true
+    messages:
+      - "&a&lYou have discovered @area"
+      - "&f"
+      - "&f@description"
+
+# List of areas and their settings
+areas: {}
