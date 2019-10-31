@@ -14,6 +14,7 @@ import net.ignissak.discoverareas.objects.Area;
 import net.ignissak.discoverareas.utils.Metrics;
 import net.ignissak.discoverareas.utils.SmartLogger;
 import net.ignissak.discoverareas.utils.UpdateChecker;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -62,8 +63,10 @@ public final class DiscoverMain extends JavaPlugin {
 
 
         new UpdateChecker(this, resourceID).getVersion(version -> {
-            if (this.getDescription().getVersion().equals(version)) {
-                getSmartLogger().info("Your server is running latest version of DiscoverAreas. (" + this.getDescription().getVersion() + ")");
+            DefaultArtifactVersion spigotVersion = new DefaultArtifactVersion(version);
+            DefaultArtifactVersion pluginVersion = new DefaultArtifactVersion(getDescription().getVersion());
+            if (pluginVersion.compareTo(spigotVersion) > 0) {
+                getSmartLogger().info("Your server is running latest version of DiscoverAreas (" + this.getDescription().getVersion() + ").");
             } else {
                 getSmartLogger().info("---------------------------------");
                 getSmartLogger().info("There is a new update available.");
