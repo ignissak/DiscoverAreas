@@ -2,8 +2,11 @@ package net.ignissak.discoverareas.discover;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.events.AreaEnterEvent;
+import net.ignissak.discoverareas.events.AreaLeaveEvent;
 import net.ignissak.discoverareas.events.PlayerDiscoverEvent;
 import net.ignissak.discoverareas.events.worldguard.RegionEnterEvent;
+import net.ignissak.discoverareas.events.worldguard.RegionLeaveEvent;
 import net.ignissak.discoverareas.objects.Area;
 import net.ignissak.discoverareas.utils.chatinput.ChatInput;
 import org.bukkit.Bukkit;
@@ -41,6 +44,21 @@ public class DiscoverManager implements Listener {
                 area.discover(discoverPlayer);
             }
         }
+
+        Bukkit.getPluginManager().callEvent(new AreaEnterEvent(discoverPlayer, area));
+    }
+
+    @EventHandler
+    public void onRegionLeave(RegionLeaveEvent event) {
+        Player player = event.getPlayer();
+        DiscoverPlayer discoverPlayer = DiscoverMain.getDiscoverPlayer(player);
+        if (discoverPlayer == null) return;
+
+        ProtectedRegion region = event.getRegion();
+        if (DiscoverMain.getInstance().getCache().stream().noneMatch(area -> area.getRegion() == region)) return;
+        Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getRegion() == region).findFirst().get();
+
+        Bukkit.getPluginManager().callEvent(new AreaLeaveEvent(discoverPlayer, area));
     }
 
     @EventHandler
