@@ -34,6 +34,10 @@ messages:
       - "&a&lYou have discovered @area"
       - "&f"
       - "&f@description"
+  on_enter:
+    enabled: false
+    messages:
+      - "&aYou are entering @area"
 
 # List of areas and their settings
 areas: {}

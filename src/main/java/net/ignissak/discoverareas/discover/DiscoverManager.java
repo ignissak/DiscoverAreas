@@ -9,7 +9,9 @@ import net.ignissak.discoverareas.events.worldguard.RegionEnterEvent;
 import net.ignissak.discoverareas.events.worldguard.RegionLeaveEvent;
 import net.ignissak.discoverareas.objects.Area;
 import net.ignissak.discoverareas.utils.chatinput.ChatInput;
+import net.ignissak.discoverareas.utils.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,7 +39,7 @@ public class DiscoverManager implements Listener {
         if (DiscoverMain.getInstance().getCache().stream().noneMatch(area -> area.getRegion() == region)) return;
         Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getRegion() == region).findFirst().get();
 
-        if (!discoverPlayer.hasDiscovered(area)) {
+        if (!discoverPlayer.hasDiscovered(area.getName())) {
             PlayerDiscoverEvent playerDiscoverEvent = new PlayerDiscoverEvent(player, area);
             Bukkit.getPluginManager().callEvent(playerDiscoverEvent);
             if (!playerDiscoverEvent.isCancelled()) {
@@ -59,6 +61,28 @@ public class DiscoverManager implements Listener {
         Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getRegion() == region).findFirst().get();
 
         Bukkit.getPluginManager().callEvent(new AreaLeaveEvent(discoverPlayer, area));
+    }
+
+    @EventHandler
+    public void onAreaEnter(AreaEnterEvent event) {
+        Area area = event.getArea();
+        DiscoverPlayer discoverPlayer = event.getPlayer();
+
+        if (discoverPlayer.hasDiscovered(area.getName())) {
+            if (DiscoverMain.getConfiguration().getBoolean("title.on_enter.enabled")) {
+                String title = ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("title.on_enter.title").replace("@area", area.getName())).replace("@description", area.getDescription());
+                String subtitle = ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("title.on_enter.subtitle").replace("@area", area.getName())).replace("@description", area.getDescription());
+                int fadein = DiscoverMain.getConfiguration().getInt("title.on_enter.fadein") * 20;
+                int stay = DiscoverMain.getConfiguration().getInt("title.on_enter.stay") * 20;
+                int fadeout = DiscoverMain.getConfiguration().getInt("title.on_enter.fadeout") * 20;
+                new Title(title, subtitle, fadein, stay, fadeout).send(discoverPlayer.getPlayer());
+            }
+            if (DiscoverMain.getConfiguration().getBoolean("messages.on_enter.enabled")) {
+                for (String s : DiscoverMain.getConfiguration().getStringList("messages.on_enter.messages")) {
+                    discoverPlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', s.replace("@area", area.getName()).replace("@description", area.getDescription())));
+                }
+            }
+        }
     }
 
     @EventHandler

@@ -23,7 +23,7 @@ public class DiscoverPlayer {
 
     private void saveToData() {
         if (getDiscovered().size() == 0) return;
-        List<String> list = getDiscovered().stream().map(Area::getName).collect(Collectors.toList());
+        List<String> list = this.getDiscovered();
         DiscoverMain.getData().set(player.getUniqueId().toString(), list);
         DiscoverMain.getInstance().saveFiles();
     }
@@ -42,12 +42,8 @@ public class DiscoverPlayer {
         @return list of areas
      **/
 
-    public List<Area> getDiscovered() {
-        List<Area> out = new ArrayList<>();
-        for (Area a : DiscoverMain.getInstance().getCache()) {
-            if (getDiscovered().contains(a)) out.add(a);
-        }
-        return out;
+    public List<String> getDiscovered() {
+        return this.discovered;
     }
 
     /**
@@ -91,8 +87,8 @@ public class DiscoverPlayer {
      * @return boolean
      */
 
-    public boolean hasDiscovered(Area a) {
-        return discovered.contains(a.getName());
+    public boolean hasDiscovered(String a) {
+        return discovered.contains(a);
     }
 
     /**

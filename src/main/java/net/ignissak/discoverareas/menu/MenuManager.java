@@ -17,8 +17,8 @@ public class MenuManager {
         this.menus = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(new MenuListener(), DiscoverMain.getInstance());
 
-        this.previous = DiscoverMain.getInstance().getPrevious().build();
-        this.next = DiscoverMain.getInstance().getNext().build();
+        //this.previous = DiscoverMain.getInstance().getPrevious().build();
+        //this.next = DiscoverMain.getInstance().getNext().build();
 
         updateMenus();
     }

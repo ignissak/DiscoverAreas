@@ -61,7 +61,7 @@ public final class DiscoverMain extends JavaPlugin {
         }
 
         if (isBeta()) {
-            getSmartLogger().warn("This is beta version, all new features introduced can be buggy. Use this version on your own risk.");
+            getSmartLogger().warn("This is beta version, all new features introduced may be buggy. Use this version on your own risk.");
         }
 
         WGRegionEventsListener.initialize();
@@ -88,7 +88,7 @@ public final class DiscoverMain extends JavaPlugin {
 
         cacheAreas();
 
-        initItemStacks();
+        //initItemStacks();
         menuManager = new MenuManager();
 
         try {
