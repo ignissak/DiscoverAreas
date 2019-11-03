@@ -7,35 +7,13 @@ title:
     fadein: 1
     stay: 3
     fadeout: 1
-
-gui:
-  list:
-    discovered:
-      material: BOOK
-      glowing: true
-      displayname: "@area"
-      lore:
-        - "World: @world"
-        - "Description:"
-        - "@description"
-    notdiscovered:
-      material: WRITABLE_BOOK
-      glowing: false
-      displayname: "@area"
-      lore:
-        - "World: @world"
-        - "Description:"
-        - "@description"
-  previous:
-    material: ARROW
-    glowing: false
-    displayname: "&7Previous page"
-    lore: []
-  next:
-    material: ARROW
-    glowing: false
-    displayname: "&7Next page"
-    lore: []
+  on_enter:
+    enabled: true
+    title: "&a&l@area"
+    subtitle: "&f@description"
+    fadein: 1
+    stay: 3
+    fadeout: 1
 
 messages:
   help:
