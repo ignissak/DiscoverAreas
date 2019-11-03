@@ -321,7 +321,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                 break;
             case "setexp":
             case "setxp":
-                if (args.length == 3) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                if (args.length == 2) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
                 break;
             case "reset":
                 if (args.length == 2) Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
