@@ -81,6 +81,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             Area area = new Area(region, w, name, "Default description - change in config.", 0, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, new ArrayList<>());
 
                             area.addToCache();
+                            DiscoverMain.getMenuManager().updateMenus();
 
                             ChatInfo.success(player, "Successfully created area '" + name + "'.");
                             ChatInfo.info(player, "To change settings, edit config.yml file.");
