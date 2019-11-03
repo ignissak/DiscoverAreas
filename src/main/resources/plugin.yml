@@ -7,3 +7,5 @@ authors: [iGniSsak]
 commands:
   area:
     usage: /<command>
+  ".areas":
+    usage: /<command>

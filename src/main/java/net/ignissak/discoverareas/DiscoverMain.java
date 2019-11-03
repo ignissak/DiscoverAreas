@@ -5,22 +5,26 @@ import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
+import net.ignissak.discoverareas.commands.AdminAreasCommand;
 import net.ignissak.discoverareas.commands.AreaCommand;
+import net.ignissak.discoverareas.commands.AreasCommand;
 import net.ignissak.discoverareas.discover.DiscoverManager;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.events.WGRegionEventsListener;
 import net.ignissak.discoverareas.files.CustomFiles;
+import net.ignissak.discoverareas.menu.Menu;
+import net.ignissak.discoverareas.menu.MenuManager;
 import net.ignissak.discoverareas.objects.Area;
+import net.ignissak.discoverareas.utils.ItemBuilder;
 import net.ignissak.discoverareas.utils.Metrics;
 import net.ignissak.discoverareas.utils.SmartLogger;
 import net.ignissak.discoverareas.utils.UpdateChecker;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.bukkit.Bukkit;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
@@ -36,6 +40,8 @@ public final class DiscoverMain extends JavaPlugin {
     private static WorldGuard worldGuard;
     private static RegionContainer regionContainer;
     private static CustomFiles customFiles;
+    private static MenuManager menuManager;
+    private ItemBuilder undiscovered, discovered, previous, next;
 
     private List<Area> cache = new ArrayList<>();
     private static HashMap<Player, DiscoverPlayer> players = new HashMap<>();
@@ -48,7 +54,6 @@ public final class DiscoverMain extends JavaPlugin {
         getSmartLogger().info("Initializing...");
 
         hookWorldGuard();
-
         customFiles = new CustomFiles();
 
         if (!isNativeVersion()) {
@@ -59,6 +64,8 @@ public final class DiscoverMain extends JavaPlugin {
 
         this.getCommand("area").setExecutor(new AreaCommand());
         this.getCommand("area").setTabCompleter(new AreaCommand());
+       // this.getCommand("areas").setExecutor(new AreasCommand());
+        this.getCommand(".areas").setExecutor(new AdminAreasCommand());
         Bukkit.getPluginManager().registerEvents(new DiscoverManager(), this);
 
 
@@ -69,7 +76,7 @@ public final class DiscoverMain extends JavaPlugin {
                 getSmartLogger().info("Your server is running latest version of DiscoverAreas (" + this.getDescription().getVersion() + ").");
             } else {
                 getSmartLogger().info("---------------------------------");
-                getSmartLogger().info("There is a new update available.");
+                getSmartLogger().info("There is a new update available - v" + spigotVersion + ".");
                 getSmartLogger().info("https://www.spigotmc.org/resources/discoverareas-1-13." + this.resourceID + "/");
                 getSmartLogger().info("---------------------------------");
             }
@@ -77,7 +84,15 @@ public final class DiscoverMain extends JavaPlugin {
 
         cacheAreas();
 
-        Metrics metrics = new Metrics(this);
+        initItemStacks();
+        menuManager = new MenuManager();
+
+        try {
+            Metrics metrics = new Metrics(this);
+            getSmartLogger().info("This plugin uses bStats to monitor statistics.");
+        } catch (Exception e) {
+            getSmartLogger().error("Could not initialize metrics.");
+        }
     }
 
     @Override
@@ -115,6 +130,10 @@ public final class DiscoverMain extends JavaPlugin {
 
     public HashMap<Player, DiscoverPlayer> getPlayers() {
         return players;
+    }
+
+    public static MenuManager getMenuManager() {
+        return menuManager;
     }
 
     public static DiscoverPlayer getDiscoverPlayer(Player player) {
@@ -165,6 +184,10 @@ public final class DiscoverMain extends JavaPlugin {
                     getSmartLogger().error("Invalid region name '" + config.getString("region") + "' in world '" + config.getString("world") + "'.");
                     return;
                 }
+                if (Bukkit.getWorld(config.getString("world")) == null) {
+                    getSmartLogger().error("Invalid world name '" + config.getString("world") + "' for area '" + key + "'.");
+                    return;
+                }
                 Area a = new Area(rm.getRegion(config.getString("region")), w, key, config.getString("description"), config.getInt("xp"), Sound.valueOf(config.getString("sound")), config.getStringList("commands"));
                 this.cache.add(a);
             } catch (NullPointerException e) {
@@ -181,6 +204,39 @@ public final class DiscoverMain extends JavaPlugin {
         }
     }
 
+    private void initItemStacks() {
+        try {
+            ItemBuilder undiscovered = new ItemBuilder(Material.valueOf(getConfiguration().getString("gui.list.notdiscovered.material")), 1)
+                    .setName(getConfiguration().getString("gui.list.notdiscovered.displayname"))
+                    .setLore(getConfiguration().getStringList("gui.list.notdiscovered.lore"));
+            if (getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
+
+            ItemBuilder discovered = new ItemBuilder(Material.valueOf(getConfiguration().getString("gui.list.discovered.material")), 1)
+                    .setName(getConfiguration().getString("gui.list.discovered.displayname"))
+                    .setLore(getConfiguration().getStringList("gui.list.discovered.lore"));
+            if (getConfiguration().getBoolean("gui.list.discovered.glowing")) discovered.setGlowing();
+
+            ItemBuilder previous = new ItemBuilder(Material.valueOf(getConfiguration().getString("gui.previous.material")), 1)
+                    .setName(getConfiguration().getString("gui.previous.displayname"))
+                    .setLore(getConfiguration().getStringList("gui.previous.lore"));
+            if (getConfiguration().getBoolean("gui.previous.glowing")) previous.setGlowing();
+
+            ItemBuilder next = new ItemBuilder(Material.valueOf(getConfiguration().getString("gui.next.material")), 1)
+                    .setName(getConfiguration().getString("gui.next.displayname"))
+                    .setLore(getConfiguration().getStringList("gui.next.lore"));
+            if (getConfiguration().getBoolean("gui.next.glowing")) next.setGlowing();
+
+
+            this.undiscovered = undiscovered;
+            this.discovered = discovered;
+            this.previous = previous;
+            this.next = next;
+        } catch (Exception e) {
+            getSmartLogger().error("Could not initialize GUI items.");
+            e.printStackTrace();
+        }
+    }
+
     public boolean existsArea(String name) {
         return getConfiguration().get("areas." + name) != null;
     }
@@ -191,5 +247,51 @@ public final class DiscoverMain extends JavaPlugin {
 
     public boolean isInData(String uuid) {
         return getData().get(uuid) != null;
+    }
+
+    public ItemBuilder getUndiscovered(Area area) {
+        ItemBuilder undiscovered = this.undiscovered;
+        undiscovered.setName(undiscovered.getName().replace("@area", area.getName()).replace("@description", area.getDescription()));
+        List<String> lore = undiscovered.getLore();
+        lore.replaceAll(l -> {
+            l.replace("@area", area.getName());
+            l.replace("@description", area.getDescription());
+            l.replace("@world", area.getWorld().getName());
+            return l;
+        });
+        undiscovered.setLore(lore);
+        return undiscovered;
+    }
+
+    public ItemBuilder getDiscovered(Area area) {
+        ItemBuilder discovered = this.discovered;
+        discovered.setName(discovered.getName().replace("@area", area.getName()).replace("@description", area.getDescription()));
+        List<String> lore = discovered.getLore();
+        lore.replaceAll(l -> {
+            l.replace("@area", area.getName());
+            l.replace("@description", area.getDescription());
+            l.replace("@world", area.getWorld().getName());
+            return l;
+        });
+        discovered.setLore(lore);
+        return discovered;
+    }
+
+    public ItemBuilder getAdminItem(Area area) {
+        return new ItemBuilder(Material.PAPER, 1)
+                .setName(ChatColor.translateAlternateColorCodes('&', "&a" + area.getName()))
+                .setLore(ChatColor.translateAlternateColorCodes('&', "&7Region: &f" + area.getRegion().getId()),
+                        ChatColor.translateAlternateColorCodes('&', "&7World: &f" + area.getWorld().getName()),
+                        ChatColor.translateAlternateColorCodes('&', "&7Discovered: &f" + area.getDiscoveredBy().size()),
+                        ChatColor.translateAlternateColorCodes('&', "&7Click to see commands."),
+                        ChatColor.translateAlternateColorCodes('&', "&7Shift-Click to teleport."));
+    }
+
+    public ItemBuilder getPrevious() {
+        return previous;
+    }
+
+    public ItemBuilder getNext() {
+        return next;
     }
 }

@@ -34,7 +34,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
         Player player = (Player) sender;
 
         if (!player.hasPermission("discoverareas.admin")) {
-            player.sendMessage("§6This server runs DiscoverAreas version " + DiscoverMain.getInstance().getDescription().getVersion() + ".");
+            player.sendMessage(ChatColor.GOLD + "This server runs DiscoverAreas version " + DiscoverMain.getInstance().getDescription().getVersion() + ".");
             return true;
         } else {
 
@@ -217,6 +217,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             }
 
                             discoverPlayer.resetProgress();
+                            DiscoverMain.getMenuManager().updateMenus();
 
                             ChatInfo.success(player, "Your progress was reset.");
                             break;
@@ -242,6 +243,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                     DiscoverMain.getData().set(target, null);
                                     DiscoverMain.getInstance().saveFiles();
                                 }
+                                DiscoverMain.getMenuManager().updateMenus();
 
                                 ChatInfo.success(player, "Data were successfully reset.");
                                 break;
@@ -259,6 +261,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                 }
 
                                 targetPlayer.resetProgress();
+                                DiscoverMain.getMenuManager().updateMenus();
 
                                 ChatInfo.success(player, "Data of player '" + targetPlayer.getPlayer().getName() + "' were successfully reset.");
                                 break;
@@ -269,12 +272,183 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             break;
                         }
                     }
+                case "command":
+                    // area command add <id>
+                    if (args.length >= 3) {
+                        switch (args[1].toLowerCase()) {
+                            case "list":
+                                StringBuilder sb1 = new StringBuilder();
+                                for (int i = 2; i < args.length; i++) {
+                                    sb1.append(args[i]);
+                                    if (i + 1 != args.length) {
+                                        sb1.append(" ");
+                                    }
+                                }
+                                String name1 = sb1.toString();
+
+                                if (!DiscoverMain.getInstance().existsArea(name1)) {
+                                    ChatInfo.error(player, "Area with name '" + name1 + "' does not exist.");
+                                    break;
+                                }
+
+                                Area area1 = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name1)).findFirst().get();
+
+                                try {
+                                    area1.sendCommands(player);
+                                } catch (Exception e) {
+                                    ChatInfo.error(player, "Could not display command list. Check console for error.");
+                                    e.printStackTrace();
+                                    break;
+                                }
+                                break;
+                            case "add":
+                                StringBuilder sb = new StringBuilder();
+                                for (int i = 2; i < args.length; i++) {
+                                    sb.append(args[i]);
+                                    if (i + 1 != args.length) {
+                                        sb.append(" ");
+                                    }
+                                }
+                                String name = sb.toString();
+
+                                if (!DiscoverMain.getInstance().existsArea(name)) {
+                                    ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
+                                    break;
+                                }
+
+                                Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
+
+                                ChatInfo.info(player, "Enter new command you would like to add, to cancel type 'cancel'.");
+                                ChatInfo.info(player, "Use @player placeholder for player's nick.");
+                                ChatInput chatInput = new ChatInput(player);
+                                chatInput.setChatInputCompleteMethod((p, m) -> {
+                                    try {
+                                        area.addRewardCommand(m);
+                                        area.updateData();
+                                        ChatInfo.success(player, "Successfully added new command for area '" + name + "'.");
+                                    } catch (Exception e) {
+                                        ChatInfo.error(player, "There was an error while adding new command.");
+                                    }
+                                });
+                                break;
+                            case "remove":
+                                //area command remove <name>
+                                try {
+                                    StringBuilder sb2 = new StringBuilder();
+                                    for (int i = 2; i < args.length; i++) {
+                                        sb2.append(args[i]);
+                                        if (i + 1 != args.length) {
+                                            sb2.append(" ");
+                                        }
+                                    }
+                                    String name2 = sb2.toString();
+
+                                    if (!DiscoverMain.getInstance().existsArea(name2)) {
+                                        ChatInfo.error(player, "Area with name '" + name2 + "' does not exist.");
+                                        break;
+                                    }
+
+                                    Area area2 = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name2)).findFirst().get();
+
+                                    if (area2.getRewardCommands().isEmpty())  {
+                                        ChatInfo.error(player, "This area does not have any commands defined.");
+                                        break;
+                                    }
+
+                                    if (area2.getRewardCommands().size() == 1) {
+                                        ChatInfo.info(player, "Enter ID of command (available: 0), to cancel type 'cancel'.");
+                                    } else {
+                                        ChatInfo.info(player, "Enter ID of command (available: 0-" + (area2.getRewardCommands().size() - 1) +"), to cancel type 'cancel'.");
+                                    }
+                                    ChatInput chatInput2 = new ChatInput(player);
+                                    chatInput2.setChatInputCompleteMethod((p, m) -> {
+                                        try {
+                                            int id = Integer.parseInt(m);
+                                            area2.getRewardCommands().remove(id);
+                                            area2.updateData();
+                                            ChatInfo.success(player, "Successfully removed command with ID " + id + " for area '" + name2 + "'.");
+                                        } catch (Exception e) {
+                                            if (e instanceof NumberFormatException) {
+                                                ChatInfo.error(player, "Entry was not a number, try again.");
+                                            } else ChatInfo.error(player, "There was an error while removing command.");
+                                        }
+                                    });
+                                    break;
+                                } catch (Exception e) {
+                                    ChatInfo.error(player, "Usage: /area command remove <area>");
+                                    break;
+                                }
+                            case "edit":
+                                //area command edit <id> <area>
+                                try {
+                                    StringBuilder sb2 = new StringBuilder();
+                                    for (int i = 3; i < args.length; i++) {
+                                        sb2.append(args[i]);
+                                        if (i + 1 != args.length) {
+                                            sb2.append(" ");
+                                        }
+                                    }
+                                    String name2 = sb2.toString();
+                                    int id = Integer.parseInt(args[2]);
+
+                                    if (!DiscoverMain.getInstance().existsArea(name2)) {
+                                        ChatInfo.error(player, "Area with name '" + name2 + "' does not exist.");
+                                        break;
+                                    }
+
+                                    Area area2 = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name2)).findFirst().get();
+
+                                    if (area2.getRewardCommands().isEmpty())  {
+                                        ChatInfo.error(player, "This area does not have any commands defined.");
+                                        break;
+                                    }
+
+                                    if (id > area2.getRewardCommands().size() - 1) {
+                                        ChatInfo.error(player, "Invalid ID of command. Maximum: " + area2.getRewardCommands().size());
+                                        break;
+                                    }
+
+                                    ChatInfo.info(player, "Enter new command to replace, to cancel type 'cancel'.");
+                                    ChatInfo.info(player, "Use @player placeholder for player's nick.");
+                                    ChatInput chatInput2 = new ChatInput(player);
+                                    chatInput2.setChatInputCompleteMethod((p, m) -> {
+                                        try {
+                                            area2.getRewardCommands().set(id, m);
+                                            area2.updateData();
+                                            ChatInfo.success(player, "Successfully edited command with ID " + id + " for area '" + name2 + "'.");
+                                        } catch (Exception e) {
+                                            if (e instanceof NumberFormatException) {
+                                                ChatInfo.error(player, "Entry was not a number, try again.");
+                                            } else ChatInfo.error(player, "There was an error while removing command.");
+                                        }
+                                    });
+                                    break;
+                                } catch (Exception e) {
+                                    if (e instanceof  NumberFormatException) {
+                                        ChatInfo.error(player, "Could not format ID value. Example: /area command edit 0 Northern Kingdom");
+                                    } else ChatInfo.error(player, "Usage: /area command remove <area>");
+                                    break;
+                                }
+                            default:
+                                showHelp(player);
+                                break;
+                        }
+                    } else {
+                        showHelp(player);
+                        break;
+                    }
+                    break;
                 case "reload":
                     ChatInfo.info(player, "Reloading...");
                     try {
+                        ChatInfo.info(player, "1/4: Reloading files...");
                         DiscoverMain.getInstance().reloadFiles();
+                        ChatInfo.info(player, "2/4: Reloading areas...");
                         DiscoverMain.getInstance().getCache().forEach(Area::reload);
+                        ChatInfo.info(player, "3/4: Reloading players...");
                         DiscoverMain.getInstance().getPlayers().values().forEach(DiscoverPlayer::reload);
+                        ChatInfo.info(player, "4/4: Reloading menus...");
+                        DiscoverMain.getMenuManager().updateMenus();
 
                         ChatInfo.success(player, "Successfully reloaded all files.");
                         break;

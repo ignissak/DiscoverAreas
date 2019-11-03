@@ -1,5 +1,6 @@
 package net.ignissak.discoverareas.utils.chatinput;
 
+import net.ignissak.discoverareas.utils.ChatInfo;
 import net.ignissak.discoverareas.utils.PlayerRunnable;
 import org.bukkit.entity.Player;
 
@@ -16,7 +17,9 @@ public class ChatInput {
         this.p = p;
         inputPlayers.put(p, this);
         this.completeMethod = (pl, m) -> {};
-        this.exitMethod = pl -> {};
+        this.exitMethod = pl -> {
+            ChatInfo.info(pl, "Operation cancelled.");
+        };
     }
 
     public void finish(){

@@ -8,15 +8,48 @@ title:
     stay: 3
     fadeout: 1
 
+gui:
+  list:
+    discovered:
+      material: BOOK
+      glowing: true
+      displayname: "@area"
+      lore:
+        - "World: @world"
+        - "Description:"
+        - "@description"
+    notdiscovered:
+      material: WRITABLE_BOOK
+      glowing: false
+      displayname: "@area"
+      lore:
+        - "World: @world"
+        - "Description:"
+        - "@description"
+  previous:
+    material: ARROW
+    glowing: false
+    displayname: "&7Previous page"
+    lore: []
+  next:
+    material: ARROW
+    glowing: false
+    displayname: "&7Next page"
+    lore: []
+
 messages:
   help:
     - "&6&lDiscoverAreas Help"
     - "&e/area &8- &7shows this help"
-    - "&e/area create <region> <name> &8- &7creates new discoverable area"
-    - "&e/area delete <name> &8- &7removes a discoverable area"
-    - "&e/area setexp <name> <amount> &8- &7sets xp reward for area"
-    - "&e/area reset [player] &8- &7removes yours/player's progress"
-    - "&e/area setdesc <name> &8- &7sets area's new description"
+    - "&e/area create <region> <name> &8- &7create new discoverable area"
+    - "&e/area delete <name> &8- &7remove a discoverable area"
+    - "&e/area setexp <name> <amount> &8- &7set xp reward for area"
+    - "&e/area reset [player] &8- &7remove yours/player's progress"
+    - "&e/area setdesc <name> &8- &7set area's new description"
+    - "&e/area command list <area> &8- &7shows all area's reward commands"
+    - "&e/area command add <name> &8- &7add new reward command to area"
+    - "&e/area command remove <cmd_id> <area> &8- &7remove reward command"
+    - "&e/area command edit <cmd_id> <area> &8- &7edit reward command"
   on_discover:
     enabled: true
     messages:

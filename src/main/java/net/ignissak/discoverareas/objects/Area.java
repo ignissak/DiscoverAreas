@@ -3,14 +3,17 @@ package net.ignissak.discoverareas.objects;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.ignissak.discoverareas.DiscoverMain;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
+import net.ignissak.discoverareas.utils.ChatInfo;
+import net.ignissak.discoverareas.utils.TextComponentBuilder;
 import net.ignissak.discoverareas.utils.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Area {
 
@@ -21,6 +24,7 @@ public class Area {
     private List<String> rewardCommands;
     private Sound discoverySound;
     private ConfigurationSection configurationSection;
+    private List<UUID> discoveredBy;
 
     public Area(String name) {
         Area cached = DiscoverMain.getInstance().getCache().stream().filter(area -> area.getName().equalsIgnoreCase(name)).findFirst().get();
@@ -33,6 +37,7 @@ public class Area {
         this.name = cached.getName();
 
         this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
+        this.initDiscoveredBy();
     }
 
     public Area(ProtectedRegion region) {
@@ -46,6 +51,7 @@ public class Area {
         this.name = cached.getName();
 
         this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
+        this.initDiscoveredBy();
     }
 
     public Area(ProtectedRegion region, World world, String name, String description, int xp, Sound discoverySound, List<String> rewardCommands) {
@@ -58,6 +64,7 @@ public class Area {
         this.rewardCommands = rewardCommands;
 
         this.addData();
+        this.initDiscoveredBy();
     }
 
     public ProtectedRegion getRegion() {
@@ -70,6 +77,10 @@ public class Area {
 
     public List<String> getRewardCommands() {
         return rewardCommands;
+    }
+
+    public void addRewardCommand(String s) {
+        this.rewardCommands.add(s);
     }
 
     public String getName() {
@@ -90,6 +101,11 @@ public class Area {
 
     public String getDescription() {
         return description;
+    }
+
+    public List<UUID> getDiscoveredBy() {
+        this.initDiscoveredBy();
+        return discoveredBy;
     }
 
     public void setDescription(String description) {
@@ -126,6 +142,7 @@ public class Area {
         configurationSection.set("sound", getDiscoverySound().toString());
 
         DiscoverMain.getInstance().saveFiles();
+        DiscoverMain.getMenuManager().updateMenus();
     }
 
     public void addToCache() {
@@ -159,6 +176,8 @@ public class Area {
         if (getConfigurationSection().getInt("xp") > 0) {
             discoverPlayer.getPlayer().giveExp(configurationSection.getInt("xp"));
         }
+
+        DiscoverMain.getMenuManager().updateMenus();
     }
 
     public void reload() {
@@ -170,6 +189,8 @@ public class Area {
         configurationSection.set("xp", getXp());
         configurationSection.set("commands", getRewardCommands());
         configurationSection.set("sound", getDiscoverySound().toString());
+
+        DiscoverMain.getMenuManager().updateMenus();
     }
 
     public void delete() {
@@ -187,5 +208,56 @@ public class Area {
 
         DiscoverMain.getConfiguration().set("areas." + getName(), null);
         DiscoverMain.getInstance().saveFiles();
+        DiscoverMain.getMenuManager().updateMenus();
+    }
+
+    public void sendCommands(Player player) {
+        if (this.getRewardCommands().size() <= 0) {
+            ChatInfo.warning(player, "This area does not have any commands defined.");
+            return;
+        }
+        player.playSound(player.getLocation(), Sound.BLOCK_CHEST_OPEN, 1, 0);
+        player.sendMessage(ChatColor.GREEN + "Area: '" + this.getName() + "' - commands:");
+        int id = 0;
+        for (String s : this.getRewardCommands()) {
+            TextComponent base = new TextComponentBuilder(ChatColor.translateAlternateColorCodes('&', "&8[" + id + "] " + "&7/" + s + " &8- ")).getComponent();
+            TextComponent edit = new TextComponentBuilder(ChatColor.translateAlternateColorCodes('&', "&e&lEDIT ")).setPerformedCommand("area command edit " + id + " " + getName()).setTooltip("Edit command").getComponent();
+            TextComponent remove = new TextComponentBuilder(ChatColor.translateAlternateColorCodes('&', "&c&lREMOVE")).setPerformedCommand("area command remove " + id + " " + getName()).setTooltip("Remove command").getComponent();
+            player.spigot().sendMessage(base.duplicate(), edit.duplicate(), remove.duplicate());
+            id++;
+        }
+        new TextComponentBuilder(ChatColor.AQUA + "> Click here to add new command.").setPerformedCommand("area command add " + getName()).setTooltip("Add new command").send(player);
+    }
+
+    public void teleport(Player player) {
+        //Get top location
+        Location top = new Location(getWorld(), 0, 0, 0);
+        top.setX(region.getMaximumPoint().getX());
+
+        top.setZ(region.getMaximumPoint().getZ());
+
+        //Get bottom location
+        Location bottom = new Location(getWorld(), 0, 0, 0);
+        bottom.setX(region.getMinimumPoint().getX());
+        bottom.setZ(region.getMinimumPoint().getZ());
+
+        //Split difference
+        double X =  ((bottom.getX() - top.getX())/2) + bottom.getX();
+        double Z =  ((bottom.getZ() - top.getZ())/2) + bottom.getZ();
+
+        //Setup new location
+        Location location = new Location(getWorld(), X, getWorld().getHighestBlockYAt((int) X, (int) Z), Z);
+
+        player.teleport(location);
+        player.setFallDistance(0);
+    }
+
+    private void initDiscoveredBy() {
+        List<UUID> out = new ArrayList<>();
+        DiscoverMain.getData().getKeys(false).forEach(uuidString -> {
+            List<String> discovered = DiscoverMain.getData().getStringList(uuidString);
+            if (discovered.contains(getName())) out.add(UUID.fromString(uuidString));
+        });
+        this.discoveredBy = out;
     }
 }

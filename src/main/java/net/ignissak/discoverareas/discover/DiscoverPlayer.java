@@ -35,6 +35,15 @@ public class DiscoverPlayer {
         return discovered;
     }
 
+    public List<Area> getNotDiscovered() {
+        List<Area> out = new ArrayList<>();
+        for (Area a : DiscoverMain.getInstance().getCache()) {
+            if (getDiscovered().contains(a.getName())) continue;
+            out.add(a);
+        }
+        return out;
+    }
+
     public void resetProgress() throws NullPointerException {
         this.discovered.clear();
         DiscoverMain.getData().set(player.getUniqueId().toString(), null);

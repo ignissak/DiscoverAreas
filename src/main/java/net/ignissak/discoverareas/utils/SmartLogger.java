@@ -53,7 +53,7 @@ public class SmartLogger {
         WARNING(ChatColor.YELLOW + "[WARN]"),
         ERROR(ChatColor.RED + "[ERROR]"),
         SEVERE(ChatColor.DARK_RED + "[SEVERE]"),
-        DEBUG(ChatColor.WHITE + "[DEBUG]"),
+        DEBUG(ChatColor.GRAY + "[DEBUG]"),
         SUCCESS(ChatColor.GREEN + "[SUCCESS]");
 
         @NotNull
