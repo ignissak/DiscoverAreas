@@ -34,7 +34,7 @@ public class DiscoverManager implements Listener {
         if (DiscoverMain.getInstance().getCache().stream().noneMatch(area -> area.getRegion() == region)) return;
         Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getRegion() == region).findFirst().get();
 
-        if (!discoverPlayer.hasDiscovered(area.getName())) {
+        if (!discoverPlayer.hasDiscovered(area)) {
             PlayerDiscoverEvent playerDiscoverEvent = new PlayerDiscoverEvent(player, area);
             Bukkit.getPluginManager().callEvent(playerDiscoverEvent);
             if (!playerDiscoverEvent.isCancelled()) {

@@ -6,13 +6,14 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DiscoverPlayer {
 
     private Player player;
     private List<String> discovered;
 
-    public DiscoverPlayer(Player player) {
+    DiscoverPlayer(Player player) {
         this.player = player;
         if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty()) discovered = new ArrayList<>();
         else {
@@ -20,20 +21,39 @@ public class DiscoverPlayer {
         }
     }
 
-    public void saveToData() {
+    private void saveToData() {
         if (getDiscovered().size() == 0) return;
-        List<String> list = new ArrayList<>(getDiscovered());
+        List<String> list = getDiscovered().stream().map(Area::getName).collect(Collectors.toList());
         DiscoverMain.getData().set(player.getUniqueId().toString(), list);
         DiscoverMain.getInstance().saveFiles();
     }
+
+    /**
+     * Return's player instance of DiscoverPlayer
+     * @return Player instance
+     */
 
     public Player getPlayer() {
         return player;
     }
 
-    public List<String> getDiscovered() {
-        return discovered;
+    /**
+        Returns List of areas that player has discovered
+        @return list of areas
+     **/
+
+    public List<Area> getDiscovered() {
+        List<Area> out = new ArrayList<>();
+        for (Area a : DiscoverMain.getInstance().getCache()) {
+            if (getDiscovered().contains(a)) out.add(a);
+        }
+        return out;
     }
+
+    /**
+     * Returns List of areas that player has not discovered yet
+     * @return List of areas
+     */
 
     public List<Area> getNotDiscovered() {
         List<Area> out = new ArrayList<>();
@@ -44,20 +64,40 @@ public class DiscoverPlayer {
         return out;
     }
 
+    /**
+     * Reset player's progress of discovering areas
+     * @throws NullPointerException
+     */
+
     public void resetProgress() throws NullPointerException {
         this.discovered.clear();
         DiscoverMain.getData().set(player.getUniqueId().toString(), null);
         DiscoverMain.getInstance().saveFiles();
     }
 
-    public void addDiscoveredArea(String a) {
-        this.discovered.add(a);
+    /**
+     * Adds new area to discovered list of player
+     * @param a Discovered Area
+     */
+
+    public void addDiscoveredArea(Area a) {
+        this.discovered.add(a.getName());
         this.saveToData();
     }
 
-    public boolean hasDiscovered(String a) {
-        return discovered.contains(a);
+    /**
+     * Checks if player has discovered certain area
+     * @param a Area
+     * @return boolean
+     */
+
+    public boolean hasDiscovered(Area a) {
+        return discovered.contains(a.getName());
     }
+
+    /**
+     * Reloads player's discovered areas from data file
+     */
 
     public void reload() {
         if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty()) discovered = new ArrayList<>();

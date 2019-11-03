@@ -26,7 +26,7 @@ public class Area {
     private ConfigurationSection configurationSection;
     private List<UUID> discoveredBy;
 
-    public Area(String name) {
+    Area(String name) {
         Area cached = DiscoverMain.getInstance().getCache().stream().filter(area -> area.getName().equalsIgnoreCase(name)).findFirst().get();
         this.region = cached.getRegion();
         this.world = cached.getWorld();
@@ -40,7 +40,7 @@ public class Area {
         this.initDiscoveredBy();
     }
 
-    public Area(ProtectedRegion region) {
+    Area(ProtectedRegion region) {
         Area cached = DiscoverMain.getInstance().getCache().stream().filter(area -> area.getRegion().equals(region)).findFirst().get();
         this.region = cached.getRegion();
         this.world = cached.getWorld();
@@ -53,6 +53,18 @@ public class Area {
         this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
         this.initDiscoveredBy();
     }
+
+    /**
+     * Basic Area constructor
+     * With these constructor you create new Area with exactly defined parameters
+     * @param region In which region is area located
+     * @param world In which world is area located
+     * @param name Name of area
+     * @param description Description of area
+     * @param xp XP reward of area
+     * @param discoverySound Discovery sound of area
+     * @param rewardCommands Reward command of area
+     */
 
     public Area(ProtectedRegion region, World world, String name, String description, int xp, Sound discoverySound, List<String> rewardCommands) {
         this.region = region;
@@ -67,52 +79,106 @@ public class Area {
         this.initDiscoveredBy();
     }
 
+    /**
+     * Returns region in which is area located
+     * @return ProtectedRegion object
+     */
+
     public ProtectedRegion getRegion() {
         return region;
     }
+
+    /**
+     * Returns world in which is area located
+     * @return World object
+     */
 
     public World getWorld() {
         return world;
     }
 
+    /**
+     * Returns List of reward commands
+     * @return Reward commands
+     */
+
     public List<String> getRewardCommands() {
         return rewardCommands;
     }
 
+    /**
+     * Adds new reward command to the list
+     * @param s Command
+     */
     public void addRewardCommand(String s) {
         this.rewardCommands.add(s);
     }
+
+    /**
+     * Returns name of area
+     * @return Name of area
+     */
 
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns number of experience player will get for discovery
+     * @return Number of experience
+     */
+
     public int getXp() {
         return xp;
     }
+
+    /**
+     * Sets amount of reward experience
+     * @param xp New amount of experience
+     */
 
     public void setXp(int xp) {
         this.xp = xp;
     }
 
+    /**
+     * Returns sound that player will hear after discovering area
+     * @return Sound of discovery
+     */
+
     public Sound getDiscoverySound() {
         return discoverySound;
     }
 
+    /**
+     * Returns area description
+     * @return Description
+     */
+
     public String getDescription() {
         return description;
     }
+
+    /**
+     * Returns list of UUIDs of players that discovered this area
+     * @return List of UUIDs
+     */
 
     public List<UUID> getDiscoveredBy() {
         this.initDiscoveredBy();
         return discoveredBy;
     }
 
+    /**
+     * Sets description to a new value
+     * @param description New description
+     */
+
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public ConfigurationSection getConfigurationSection() {
+    private ConfigurationSection getConfigurationSection() {
         return configurationSection;
     }
 
@@ -131,6 +197,10 @@ public class Area {
         DiscoverMain.getInstance().saveFiles();
     }
 
+    /**
+     * Updates configuration data with actual server data
+     */
+
     public void updateData() {
         this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
 
@@ -145,12 +215,22 @@ public class Area {
         DiscoverMain.getMenuManager().updateMenus();
     }
 
+    /**
+     * Adds area to cache
+     */
+
     public void addToCache() {
         if (!DiscoverMain.getInstance().getCache().contains(this)) DiscoverMain.getInstance().getCache().add(this);
     }
 
+    /**
+     * Runs all needed methods to let player discover this area
+     * Updates all data files & caches
+     * @param discoverPlayer Player that discovered this area
+     */
+
     public void discover(DiscoverPlayer discoverPlayer) {
-        discoverPlayer.addDiscoveredArea(this.getName());
+        discoverPlayer.addDiscoveredArea(this);
         if (DiscoverMain.getConfiguration().getBoolean("title.on_discover.enabled")) {
             String title = ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("title.on_discover.title").replace("@area", this.getName())).replace("@description", this.getDescription());
             String subtitle = ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("title.on_discover.subtitle").replace("@area", this.getName())).replace("@description", this.getDescription());
@@ -180,6 +260,10 @@ public class Area {
         DiscoverMain.getMenuManager().updateMenus();
     }
 
+    /**
+     * Reloads area settings from configuration
+     */
+
     public void reload() {
         this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
 
@@ -192,6 +276,10 @@ public class Area {
 
         DiscoverMain.getMenuManager().updateMenus();
     }
+
+    /**
+     * Deletes area
+     */
 
     public void delete() {
         if (DiscoverMain.getInstance().getCache().contains(this)) DiscoverMain.getInstance().getCache().remove(this);
@@ -211,6 +299,11 @@ public class Area {
         DiscoverMain.getMenuManager().updateMenus();
     }
 
+    /**
+     * Sends classic command list command to a player
+     * @param player Target player
+     */
+
     public void sendCommands(Player player) {
         if (this.getRewardCommands().size() <= 0) {
             ChatInfo.warning(player, "This area does not have any commands defined.");
@@ -228,6 +321,11 @@ public class Area {
         }
         new TextComponentBuilder(ChatColor.AQUA + "> Click here to add new command.").setPerformedCommand("area command add " + getName()).setTooltip("Add new command").send(player);
     }
+
+    /**
+     * Teleports certain player to area region
+     * @param player Target player
+     */
 
     public void teleport(Player player) {
         //Get top location
