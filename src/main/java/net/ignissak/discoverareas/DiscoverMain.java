@@ -60,6 +60,10 @@ public final class DiscoverMain extends JavaPlugin {
             getSmartLogger().warn("This server is not running plugin's native version. There may appear bugs & errors. If so, please contact developer on Spigotmc.org.");
         }
 
+        if (isBeta()) {
+            getSmartLogger().warn("This is beta version, all new features introduced can be buggy. Use this version on your own risk.");
+        }
+
         WGRegionEventsListener.initialize();
 
         this.getCommand("area").setExecutor(new AreaCommand());
@@ -144,6 +148,8 @@ public final class DiscoverMain extends JavaPlugin {
     private boolean isNativeVersion() {
         return Bukkit.getVersion().contains("1.13");
     }
+
+    private boolean isBeta() { return getDescription().getVersion().contains("B"); }
 
     public void saveFiles() {
         customFiles.saveFiles();

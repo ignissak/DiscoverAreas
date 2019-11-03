@@ -16,6 +16,7 @@ public class AreasCommand implements CommandExecutor {
         Player player = (Player) sender;
         DiscoverPlayer discoverPlayer = DiscoverMain.getDiscoverPlayer(player);
 
+        //todo
         return true;
     }
 }
