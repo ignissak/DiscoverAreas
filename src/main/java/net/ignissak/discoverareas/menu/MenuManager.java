@@ -55,7 +55,7 @@ public class MenuManager {
         List<Area> areasList = new ArrayList<>(DiscoverMain.getInstance().getCache());
         areasList.sort(Comparator.comparing(Area::getName));
 
-        if (areasList.size() <= 2) {
+        if (areasList.size() <= 45) {
             Iterator<Area> iterator = areasList.iterator();
             MenuItem[] items = new MenuItem[54];
             int i = 0;
@@ -75,7 +75,7 @@ public class MenuManager {
             this.menus.put("adminMenu", adminMenu);
         } else {
             //pages
-            List<List<Area>> pagesOfAreas = Lists.partition(areasList, 2);
+            List<List<Area>> pagesOfAreas = Lists.partition(areasList, 45);
             int page = 1;
             for (List<Area> areas : pagesOfAreas) {
                 MenuItem[] items = new MenuItem[54];

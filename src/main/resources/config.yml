@@ -49,11 +49,13 @@ gui:
     admin:
       material: BOOK
       glowing: false
-      displayname: "@area"
+      displayname: "&a@area"
       lore:
-        - "World: @world"
-        - "Description:"
-        - "@description"
+        - "&fWorld: &7@world"
+        - "&fDescription:"
+        - "&7@description"
+        - "&7Click to see commands."
+        - "&7Shift-click to teleport."
   previous:
     material: ARROW
     displayname: "&7Previous page"
