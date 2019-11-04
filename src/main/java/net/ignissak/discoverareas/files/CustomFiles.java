@@ -7,6 +7,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class CustomFiles {
 
@@ -57,10 +61,9 @@ public class CustomFiles {
 
     public void reloadFiles() {
         configConfig = new YamlConfiguration();
-        try {
-            configConfig.load(configFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+        InputStream defIMessagesStream = DiscoverMain.getInstance().getResource("config.yml");
+        if (defIMessagesStream != null) {
+            configConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defIMessagesStream, UTF_8)));
         }
 
         dataConfig = new YamlConfiguration();

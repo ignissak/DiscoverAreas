@@ -23,10 +23,18 @@ public class DiscoverManager implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Player p = event.getPlayer();
-        DiscoverPlayer discoverPlayer = new DiscoverPlayer(p);
+        Player player = event.getPlayer();
+        DiscoverPlayer discoverPlayer = new DiscoverPlayer(player);
 
-        DiscoverMain.getInstance().getPlayers().put(p, discoverPlayer);
+        DiscoverMain.getInstance().getPlayers().put(player, discoverPlayer);
+
+        if (player.hasPermission("discoverareas.admin")) {
+            if (DiscoverMain.getInstance().isUpdateAvailable() && DiscoverMain.getConfiguration().getBoolean("general.update-notify")) {
+                player.sendMessage(ChatColor.RED + "Your servers is running out-of-date version of DiscoverAreas (" + DiscoverMain.getInstance().getDescription().getVersion() + ").");
+                player.sendMessage(ChatColor.RED + "Download new version (" + DiscoverMain.getInstance().getNewVersion() + ") on spigot page: ");
+                player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-13." + DiscoverMain.getInstance().getResourceID() + "/");
+            }
+        }
     }
 
     @EventHandler

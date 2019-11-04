@@ -15,7 +15,11 @@ public class AdminAreasCommand implements CommandExecutor {
 
         if (!player.hasPermission("discoverareas.admin")) return true;
 
-        player.openInventory(DiscoverMain.getMenuManager().getMenu("adminMenu").getInventory());
+        if (DiscoverMain.getInstance().getCache().size() <= 2) {
+            player.openInventory(DiscoverMain.getMenuManager().getMenu("adminMenu").getInventory());
+        } else {
+            player.openInventory(DiscoverMain.getMenuManager().getMenu("adminMenu1").getInventory());
+        }
 
         return true;
     }

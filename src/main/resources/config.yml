@@ -1,3 +1,8 @@
+# I strongly recommend to keep this enabled, because I often release beta and snapshot versions
+# so you would get notified when stable version is released
+general:
+  update-notify: true
+
 title:
   on_discover:
     enabled: true
@@ -38,6 +43,32 @@ messages:
     enabled: false
     messages:
       - "&aYou are entering @area"
+
+gui:
+  list:
+    admin:
+      material: BOOK
+      glowing: false
+      displayname: "@area"
+      lore:
+        - "World: @world"
+        - "Description:"
+        - "@description"
+  previous:
+    material: ARROW
+    displayname: "&7Previous page"
+    lore: []
+  next:
+    material: ARROW
+    displayname: "&7Next page"
+    lore: []
+  stats:
+    enabled: true
+    material: PAPER
+    displayname: "&aStatistics"
+    lore:
+      - "&7Total areas: &f@areas"
+
 
 # List of areas and their settings
 areas: {}

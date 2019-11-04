@@ -42,6 +42,8 @@ public final class DiscoverMain extends JavaPlugin {
     private static CustomFiles customFiles;
     private static MenuManager menuManager;
     private ItemBuilder undiscovered, discovered, previous, next;
+    private boolean updateAvailable = false;
+    private String newVersion;
 
     private List<Area> cache = new ArrayList<>();
     private static HashMap<Player, DiscoverPlayer> players = new HashMap<>();
@@ -64,6 +66,10 @@ public final class DiscoverMain extends JavaPlugin {
             getSmartLogger().warn("This is beta version, all new features introduced may be buggy. Use this version on your own risk.");
         }
 
+        if (isSnapshot()) {
+            getSmartLogger().warn("This is snapshot version of plugin - this version is not final and may not be stable. Use this version on your own risk.");
+        }
+
         WGRegionEventsListener.initialize();
 
         this.getCommand("area").setExecutor(new AreaCommand());
@@ -77,18 +83,22 @@ public final class DiscoverMain extends JavaPlugin {
             DefaultArtifactVersion spigotVersion = new DefaultArtifactVersion(version);
             DefaultArtifactVersion pluginVersion = new DefaultArtifactVersion(getDescription().getVersion());
             if (pluginVersion.compareTo(spigotVersion) > 0) {
-                getSmartLogger().info("Your server is running latest version of DiscoverAreas (" + this.getDescription().getVersion() + ").");
+                if (getConfiguration().getBoolean("general.update-notify")) getSmartLogger().info("Your server is running latest version of DiscoverAreas (" + this.getDescription().getVersion() + ").");
             } else {
-                getSmartLogger().info("---------------------------------");
-                getSmartLogger().info("There is a new update available - v" + spigotVersion + ".");
-                getSmartLogger().info("https://www.spigotmc.org/resources/discoverareas-1-13." + this.resourceID + "/");
-                getSmartLogger().info("---------------------------------");
+                if (getConfiguration().getBoolean("general.update-notify")) {
+                    getSmartLogger().info("---------------------------------");
+                    getSmartLogger().info("There is a new update available - v" + spigotVersion + ".");
+                    getSmartLogger().info("https://www.spigotmc.org/resources/discoverareas-1-13." + this.resourceID + "/");
+                    getSmartLogger().info("---------------------------------");
+                }
+                this.updateAvailable = true;
+                this.newVersion = version;
             }
         });
 
         cacheAreas();
 
-        //initItemStacks();
+        initItemStacks();
         menuManager = new MenuManager();
 
         try {
@@ -140,6 +150,18 @@ public final class DiscoverMain extends JavaPlugin {
         return menuManager;
     }
 
+    public boolean isUpdateAvailable() {
+        return updateAvailable;
+    }
+
+    public String getNewVersion() {
+        return newVersion;
+    }
+
+    public int getResourceID() {
+        return resourceID;
+    }
+
     public static DiscoverPlayer getDiscoverPlayer(Player player) {
         if (players.containsKey(player)) return players.get(player);
         else return null;
@@ -150,6 +172,8 @@ public final class DiscoverMain extends JavaPlugin {
     }
 
     private boolean isBeta() { return getDescription().getVersion().contains("B"); }
+
+    private boolean isSnapshot() { return getDescription().getVersion().contains("SNAPSHOT"); }
 
     public void saveFiles() {
         customFiles.saveFiles();
@@ -212,25 +236,13 @@ public final class DiscoverMain extends JavaPlugin {
 
     private void initItemStacks() {
         try {
-            ItemBuilder undiscovered = new ItemBuilder(Material.valueOf(getConfiguration().getString("gui.list.notdiscovered.material")), 1)
-                    .setName(getConfiguration().getString("gui.list.notdiscovered.displayname"))
-                    .setLore(getConfiguration().getStringList("gui.list.notdiscovered.lore"));
-            if (getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
-
-            ItemBuilder discovered = new ItemBuilder(Material.valueOf(getConfiguration().getString("gui.list.discovered.material")), 1)
-                    .setName(getConfiguration().getString("gui.list.discovered.displayname"))
-                    .setLore(getConfiguration().getStringList("gui.list.discovered.lore"));
-            if (getConfiguration().getBoolean("gui.list.discovered.glowing")) discovered.setGlowing();
-
             ItemBuilder previous = new ItemBuilder(Material.valueOf(getConfiguration().getString("gui.previous.material")), 1)
                     .setName(getConfiguration().getString("gui.previous.displayname"))
                     .setLore(getConfiguration().getStringList("gui.previous.lore"));
-            if (getConfiguration().getBoolean("gui.previous.glowing")) previous.setGlowing();
 
             ItemBuilder next = new ItemBuilder(Material.valueOf(getConfiguration().getString("gui.next.material")), 1)
                     .setName(getConfiguration().getString("gui.next.displayname"))
                     .setLore(getConfiguration().getStringList("gui.next.lore"));
-            if (getConfiguration().getBoolean("gui.next.glowing")) next.setGlowing();
 
 
             this.undiscovered = undiscovered;
@@ -238,7 +250,7 @@ public final class DiscoverMain extends JavaPlugin {
             this.previous = previous;
             this.next = next;
         } catch (Exception e) {
-            getSmartLogger().error("Could not initialize GUI items.");
+            getSmartLogger().error("Could not initialize GUI items. It seems you are using old version of config - look at Spigot page to update your config.");
             e.printStackTrace();
         }
     }
@@ -281,16 +293,6 @@ public final class DiscoverMain extends JavaPlugin {
         });
         discovered.setLore(lore);
         return discovered;
-    }
-
-    public ItemBuilder getAdminItem(Area area) {
-        return new ItemBuilder(Material.PAPER, 1)
-                .setName(ChatColor.translateAlternateColorCodes('&', "&a" + area.getName()))
-                .setLore(ChatColor.translateAlternateColorCodes('&', "&7Region: &f" + area.getRegion().getId()),
-                        ChatColor.translateAlternateColorCodes('&', "&7World: &f" + area.getWorld().getName()),
-                        ChatColor.translateAlternateColorCodes('&', "&7Discovered: &f" + area.getDiscoveredBy().size()),
-                        ChatColor.translateAlternateColorCodes('&', "&7Click to see commands."),
-                        ChatColor.translateAlternateColorCodes('&', "&7Shift-Click to teleport."));
     }
 
     public ItemBuilder getPrevious() {

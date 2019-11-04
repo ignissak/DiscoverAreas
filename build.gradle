@@ -29,6 +29,8 @@ dependencies {
     compile group: 'org.apache.maven', name: 'maven-artifact', version: '3.0.3'
     compile 'org.jetbrains:annotations:16.0.2'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.0'
+
+    implementation("com.google.guava:guava:28.1-jre")
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens

@@ -1,9 +1,14 @@
 package net.ignissak.discoverareas.menu;
 
+import com.google.common.collect.Lists;
 import net.ignissak.discoverareas.DiscoverMain;
 import net.ignissak.discoverareas.menu.items.MenuItem;
 import net.ignissak.discoverareas.objects.Area;
+import net.ignissak.discoverareas.utils.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -17,8 +22,8 @@ public class MenuManager {
         this.menus = new HashMap<>();
         Bukkit.getPluginManager().registerEvents(new MenuListener(), DiscoverMain.getInstance());
 
-        //this.previous = DiscoverMain.getInstance().getPrevious().build();
-        //this.next = DiscoverMain.getInstance().getNext().build();
+        this.previous = DiscoverMain.getInstance().getPrevious().build();
+        this.next = DiscoverMain.getInstance().getNext().build();
 
         updateMenus();
     }
@@ -49,21 +54,123 @@ public class MenuManager {
     public void updateMenus() {
         List<Area> areasList = new ArrayList<>(DiscoverMain.getInstance().getCache());
         areasList.sort(Comparator.comparing(Area::getName));
-        Iterator<Area> iterator = areasList.iterator();
 
-        if (areasList.size() <= 45) {
-            MenuItem[] items = new MenuItem[45];
+        if (areasList.size() <= 2) {
+            Iterator<Area> iterator = areasList.iterator();
+            MenuItem[] items = new MenuItem[54];
             int i = 0;
             while (iterator.hasNext()) {
                 Area a = iterator.next();
-                items[i] = new MenuItem(DiscoverMain.getInstance().getAdminItem(a).build(), a::sendCommands, a::teleport, true);
+                items[i] = new MenuItem(getAdmin(a), a::sendCommands, a::teleport, true);
                 i++;
                 iterator.remove();
             }
 
+            if (DiscoverMain.getConfiguration().getBoolean("gui.stats.enabled")) {
+                items[49] = new MenuItem(getStatistics(), p -> {
+                }, false);
+            }
+
             Menu adminMenu = new Menu("Areas | Admin menu", items);
             this.menus.put("adminMenu", adminMenu);
+        } else {
+            //pages
+            List<List<Area>> pagesOfAreas = Lists.partition(areasList, 2);
+            int page = 1;
+            for (List<Area> areas : pagesOfAreas) {
+                MenuItem[] items = new MenuItem[54];
+                int i = 0;
+                for (Area a : areas) {
+                    items[i] = new MenuItem(getAdmin(a), a::sendCommands, a::teleport, true);
+                    i++;
+                }
+
+                if (DiscoverMain.getConfiguration().getBoolean("gui.stats.enabled")) {
+                    items[49] = new MenuItem(getStatistics(), p -> {
+                    }, false);
+                }
+
+                if (page < pagesOfAreas.size()) {
+                    int nextPage = page + 1;
+                    items[52] = new MenuItem(next, player -> {
+                        player.openInventory(getMenu("adminMenu" + nextPage).getInventory());
+                        player.playSound(player.getLocation(), Sound.BLOCK_GLASS_HIT, 1, 0);
+                    });
+                }
+                if (page > 1) {
+                    int previousPage = page - 1;
+                    items[46] = new MenuItem(previous, player -> {
+                        player.openInventory(getMenu("adminMenu" + previousPage).getInventory());
+                        player.playSound(player.getLocation(), Sound.BLOCK_GLASS_HIT, 1, 0);
+                    });
+                }
+
+
+                Menu adminMenu = new Menu("Areas | Admin menu #" + page, items);
+                this.menus.put("adminMenu" + page, adminMenu);
+
+                page++;
+            }
+            }
         }
+
+        private ItemStack getStatistics() {
+            List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.stats.lore");
+            List<String> lore = new ArrayList<>();
+            for (String s : configLore) lore.add(ChatColor.translateAlternateColorCodes('&', s
+                    .replace("@areas", String.valueOf(DiscoverMain.getInstance().getCache().size()))));
+            ItemBuilder stats = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.stats.material")), 1)
+                    .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.stats.displayname")))
+                    .setLore(lore);
+            return stats.build();
+        }
+
+    private ItemStack getAdmin(Area a) {
+        List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.admin.lore");
+        List<String> lore = new ArrayList<>();
+        for (String s : configLore) lore.add(ChatColor.translateAlternateColorCodes('&', s
+                .replace("@area", a.getName())
+                .replace("@description", a.getDescription())
+                .replace("@world", a.getWorld().getName())
+                .replace("@region", a.getRegion().getId())));
+        ItemBuilder discovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.admin.material")), 1)
+                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.admin.displayname").replace("@area", a.getName())))
+                .setLore(lore);
+        if (DiscoverMain.getConfiguration().getBoolean("gui.list.admin.glowing")) discovered.setGlowing();
+
+        return discovered.build();
     }
+
+        private ItemStack getDiscovered(Area a) {
+            List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.discovered.lore");
+            List<String> lore = new ArrayList<>();
+            for (String s : configLore) lore.add(ChatColor.translateAlternateColorCodes('&', s
+                    .replace("@area", a.getName())
+                    .replace("@description", a.getDescription())
+                    .replace("@world", a.getWorld().getName())
+                    .replace("@region", a.getRegion().getId())));
+            ItemBuilder discovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.discovered.material")), 1)
+                    .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.discovered.displayname").replace("@area", a.getName())))
+                    .setLore(lore);
+            if (DiscoverMain.getConfiguration().getBoolean("gui.list.discovered.glowing")) discovered.setGlowing();
+            
+            return discovered.build();
+        }
+
+        private ItemStack getUndiscovered(Area a) {
+            List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.notdiscovered.lore");
+            List<String> lore = new ArrayList<>();
+            for (String s : configLore) lore.add(ChatColor.translateAlternateColorCodes('&', s
+                    .replace("@area", a.getName())
+                    .replace("@description", a.getDescription())
+                    .replace("@world", a.getWorld().getName())
+                    .replace("@region", a.getRegion().getId())));
+            ItemBuilder undiscovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.material")), 1)
+                    .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.displayname")))
+                    .setLore(lore);
+            if (DiscoverMain.getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
+
+            return undiscovered.build();
+        }
 
 }
