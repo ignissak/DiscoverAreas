@@ -322,34 +322,6 @@ public class Area {
         new TextComponentBuilder(ChatColor.AQUA + "> Click here to add new command.").setPerformedCommand("area command add " + getName()).setTooltip("Add new command").send(player);
     }
 
-    /**
-     * Teleports certain player to area region
-     * @param player Target player
-     */
-
-    public void teleport(Player player) {
-        //Get top location
-        Location top = new Location(getWorld(), 0, 0, 0);
-        top.setX(region.getMaximumPoint().getX());
-
-        top.setZ(region.getMaximumPoint().getZ());
-
-        //Get bottom location
-        Location bottom = new Location(getWorld(), 0, 0, 0);
-        bottom.setX(region.getMinimumPoint().getX());
-        bottom.setZ(region.getMinimumPoint().getZ());
-
-        //Split difference
-        double X =  ((bottom.getX() - top.getX())/2) + bottom.getX();
-        double Z =  ((bottom.getZ() - top.getZ())/2) + bottom.getZ();
-
-        //Setup new location
-        Location location = new Location(getWorld(), X, getWorld().getHighestBlockYAt((int) X, (int) Z), Z);
-
-        player.teleport(location);
-        player.setFallDistance(0);
-    }
-
     private void initDiscoveredBy() {
         List<UUID> out = new ArrayList<>();
         DiscoverMain.getData().getKeys(false).forEach(uuidString -> {

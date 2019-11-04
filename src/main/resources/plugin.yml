@@ -1,7 +1,6 @@
 name: DiscoverAreas
-version: 1.4.0-B1
+version: 1.5.0-B1-1_12
 main: net.ignissak.discoverareas.DiscoverMain
-api-version: 1.13
 depend: [WorldGuard]
 authors: [iGniSsak]
 commands:

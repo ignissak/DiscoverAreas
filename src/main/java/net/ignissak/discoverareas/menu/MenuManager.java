@@ -61,7 +61,7 @@ public class MenuManager {
             int i = 0;
             while (iterator.hasNext()) {
                 Area a = iterator.next();
-                items[i] = new MenuItem(getAdmin(a), a::sendCommands, a::teleport, true);
+                items[i] = new MenuItem(getAdmin(a), a::sendCommands, true);
                 i++;
                 iterator.remove();
             }
@@ -81,7 +81,7 @@ public class MenuManager {
                 MenuItem[] items = new MenuItem[54];
                 int i = 0;
                 for (Area a : areas) {
-                    items[i] = new MenuItem(getAdmin(a), a::sendCommands, a::teleport, true);
+                    items[i] = new MenuItem(getAdmin(a), a::sendCommands,true);
                     i++;
                 }
 

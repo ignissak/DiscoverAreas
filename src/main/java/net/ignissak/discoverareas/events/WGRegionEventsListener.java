@@ -2,11 +2,11 @@ package net.ignissak.discoverareas.events;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldedit.bukkit.BukkitUtil;
+import com.sk89q.worldguard.bukkit.RegionContainer;
+import com.sk89q.worldguard.bukkit.WGBukkit;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.ignissak.discoverareas.DiscoverMain;
 import net.ignissak.discoverareas.events.worldguard.*;
 import org.bukkit.Bukkit;
@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -40,7 +41,7 @@ public class WGRegionEventsListener implements Listener {
     private WGRegionEventsListener(final DiscoverMain plugin) {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        this.container = WorldGuard.getInstance().getPlatform().getRegionContainer();
+        this.container = DiscoverMain.getRegionContainer();
         this.playerRegions = Maps.newHashMap();
         WGRegionEventsListener.initialized = true;
     }
@@ -126,7 +127,6 @@ public class WGRegionEventsListener implements Listener {
     }
 
     private synchronized boolean updateRegions(final Player player, final MovementWay movement, final Location to, final Event event) {
-        final com.sk89q.worldedit.util.Location Wto = BukkitAdapter.adapt(to);
         Set<ProtectedRegion> regions;
         if (this.playerRegions.get(player) == null) {
             regions = new HashSet<>();
@@ -135,11 +135,11 @@ public class WGRegionEventsListener implements Listener {
             regions = new HashSet<>(this.playerRegions.get(player));
         }
         final Set<ProtectedRegion> oldRegions = new HashSet<>(regions);
-        final RegionManager rm = this.container.get(BukkitAdapter.adapt(to.getWorld()));
+        final RegionManager rm = this.container.get(to.getWorld());
         if (rm == null) {
             return false;
         }
-        final HashSet<ProtectedRegion> appRegions = new HashSet<>(rm.getApplicableRegions(Wto.toVector().toBlockPoint()).getRegions());
+        final HashSet<ProtectedRegion> appRegions = new HashSet<>(rm.getApplicableRegions(BukkitUtil.toVector(to)).getRegions());
         final ProtectedRegion globalRegion = rm.getRegion("__global__");
         if (globalRegion != null) {
             appRegions.add(globalRegion);

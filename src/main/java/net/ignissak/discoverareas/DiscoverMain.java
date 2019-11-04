@@ -1,10 +1,9 @@
 package net.ignissak.discoverareas;
 
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitWorld;
-import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.RegionContainer;
+import com.sk89q.worldguard.bukkit.WGBukkit;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.ignissak.discoverareas.commands.AdminAreasCommand;
 import net.ignissak.discoverareas.commands.AreaCommand;
 import net.ignissak.discoverareas.commands.AreasCommand;
@@ -37,7 +36,7 @@ public final class DiscoverMain extends JavaPlugin {
 
     private static DiscoverMain instance;
     private static SmartLogger smartLogger;
-    private static WorldGuard worldGuard;
+    private static WorldGuardPlugin worldGuard;
     private static RegionContainer regionContainer;
     private static CustomFiles customFiles;
     private static MenuManager menuManager;
@@ -54,6 +53,8 @@ public final class DiscoverMain extends JavaPlugin {
         smartLogger = new SmartLogger();
 
         getSmartLogger().info("Initializing...");
+
+        getSmartLogger().warn("This version of plugin works only on earlier versions than 1.13. To get 1.13+ support, please upload second file included in the zip.");
 
         hookWorldGuard();
         customFiles = new CustomFiles();
@@ -122,7 +123,7 @@ public final class DiscoverMain extends JavaPlugin {
         return smartLogger;
     }
 
-    public static WorldGuard getWorldGuard() {
+    public static WorldGuardPlugin getWorldGuard() {
         return worldGuard;
     }
 
@@ -168,7 +169,7 @@ public final class DiscoverMain extends JavaPlugin {
     }
 
     private boolean isNativeVersion() {
-        return Bukkit.getVersion().contains("1.13");
+        return Bukkit.getVersion().contains("1.12");
     }
 
     private boolean isBeta() { return getDescription().getVersion().contains("B"); }
@@ -184,17 +185,17 @@ public final class DiscoverMain extends JavaPlugin {
     }
 
     private void hookWorldGuard() {
-        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null && Bukkit.getPluginManager().getPlugin("WorldBukkit") != null) {
             try {
-                worldGuard = WorldGuard.getInstance();
-                regionContainer = worldGuard.getPlatform().getRegionContainer();
+                worldGuard = WGBukkit.getPlugin();
+                regionContainer = worldGuard.getRegionContainer();
                 getSmartLogger().success("WorldGuard hooked!");
             } catch (Exception e) {
                 getSmartLogger().error("Could not hook WorldGuard!");
             }
             return;
         }
-        getSmartLogger().severe("Could not hook WorldGuard! It looks like you do not have WorldGuard installed on your server.");
+        getSmartLogger().severe("Could not hook WorldGuard & WorldEdit! It looks like you do not have WorldGuard installed on your server.");
         getSmartLogger().info("Turning off...");
         Bukkit.getPluginManager().disablePlugin(this);
     }
@@ -209,7 +210,7 @@ public final class DiscoverMain extends JavaPlugin {
             try {
                 ConfigurationSection config = cs.getConfigurationSection(key);
                 World w = Bukkit.getWorld(config.getString("world", "world"));
-                RegionManager rm = getRegionContainer().get(new BukkitWorld(w));
+                RegionManager rm = getRegionContainer().get(w);
                 if (!rm.hasRegion(config.getString("region"))) {
                     getSmartLogger().error("Invalid region name '" + config.getString("region") + "' in world '" + config.getString("world") + "'.");
                     return;

@@ -1,6 +1,5 @@
 package net.ignissak.discoverareas.commands;
 
-import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.ignissak.discoverareas.DiscoverMain;
@@ -71,7 +70,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                 break;
                             }
 
-                            RegionManager rm = DiscoverMain.getRegionContainer().get(new BukkitWorld(w));
+                            RegionManager rm = DiscoverMain.getRegionContainer().get(w);
                             if (!rm.hasRegion(regionName)) {
                                 ChatInfo.error(player, "Could not find region '" + regionName + "' in this world.");
                                 break;
@@ -486,7 +485,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
             case "add":
             case "create":
                 if (args.length == 2) {
-                    DiscoverMain.getRegionContainer().get(new BukkitWorld(player.getWorld())).getRegions().values().forEach(region -> {
+                    DiscoverMain.getRegionContainer().get(player.getWorld()).getRegions().values().forEach(region -> {
                         if (!DiscoverMain.getInstance().getCache().stream().anyMatch(area -> area.getRegion() == region)) out.add(region.getId());
                     });
                 }
