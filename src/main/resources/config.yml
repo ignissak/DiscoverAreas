@@ -1,5 +1,5 @@
-# I strongly recommend to keep this enabled, because I often release beta and snapshot versions
-# so you would get notified when stable version is released
+# I strongly recommend keeping this enabled, because I often release beta and snapshot versions
+# so you would get notified when the stable version is released
 general:
   update-notify: true
 
