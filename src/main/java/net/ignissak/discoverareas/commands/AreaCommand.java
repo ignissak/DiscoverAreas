@@ -479,6 +479,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
             out.add("setxp");
             out.add("reset");
             out.add("setdesc");
+            out.add("command");
         }
 
         switch (args[0].toLowerCase()) {
@@ -503,6 +504,26 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                 break;
             case "setdesc":
                 if (args.length == 2) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                break;
+            case "command":
+                if (args.length == 2) {
+                    out.add("list");
+                    out.add("add");
+                    out.add("remove");
+                    out.add("edit");
+                    break;
+                } else if (args.length > 2) {
+                    switch (args[1].toLowerCase()) {
+                        case "add":
+                        case "remove":
+                        case "list":
+                            DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                            break;
+                        case "edit":
+                            if (args.length == 4) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                            break;
+                    }
+                }
         }
         Collections.sort(out);
         return out;
