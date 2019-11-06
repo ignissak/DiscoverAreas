@@ -61,9 +61,10 @@ public class CustomFiles {
 
     public void reloadFiles() {
         configConfig = new YamlConfiguration();
-        InputStream defIMessagesStream = DiscoverMain.getInstance().getResource("config.yml");
-        if (defIMessagesStream != null) {
-            configConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defIMessagesStream, UTF_8)));
+        try {
+            configConfig.load(configFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
         }
 
         dataConfig = new YamlConfiguration();
