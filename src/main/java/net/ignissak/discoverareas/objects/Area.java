@@ -1,5 +1,6 @@
 package net.ignissak.discoverareas.objects;
 
+import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.ignissak.discoverareas.DiscoverMain;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
@@ -267,12 +268,12 @@ public class Area {
     public void reload() {
         this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
 
-        configurationSection.set("world", getWorld().getName());
-        configurationSection.set("region", getRegion().getId());
-        configurationSection.set("description", getDescription());
-        configurationSection.set("xp", getXp());
-        configurationSection.set("commands", getRewardCommands());
-        configurationSection.set("sound", getDiscoverySound().toString());
+        this.world = Bukkit.getWorld(configurationSection.getString("world"));
+        this.region = DiscoverMain.getRegionContainer().get(new BukkitWorld(world)).getRegion(getConfigurationSection().getString("region"));
+        this.description = configurationSection.getString("description");
+        this.xp = configurationSection.getInt("xp");
+        this.rewardCommands = configurationSection.getStringList("commands");
+        this.discoverySound = Sound.valueOf(getConfigurationSection().getString("sound"));
 
         DiscoverMain.getMenuManager().updateMenus();
     }
