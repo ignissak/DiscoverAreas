@@ -199,7 +199,7 @@ public final class DiscoverMain extends JavaPlugin {
         Bukkit.getPluginManager().disablePlugin(this);
     }
 
-    private void cacheAreas() {
+    public void cacheAreas() {
         ConfigurationSection cs = getConfiguration().getConfigurationSection("areas");
         if (cs.getKeys(false).size() <= 0) {
             getSmartLogger().info("There are no areas defined.");

@@ -445,7 +445,8 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                         ChatInfo.info(player, "1/4: Reloading files...");
                         DiscoverMain.getInstance().reloadFiles();
                         ChatInfo.info(player, "2/4: Reloading areas...");
-                        DiscoverMain.getInstance().getCache().forEach(Area::reload);
+                        DiscoverMain.getInstance().getCache().clear();
+                        DiscoverMain.getInstance().cacheAreas();
                         ChatInfo.info(player, "3/4: Reloading players...");
                         DiscoverMain.getInstance().getPlayers().values().forEach(DiscoverPlayer::reload);
                         ChatInfo.info(player, "4/4: Reloading menus...");
