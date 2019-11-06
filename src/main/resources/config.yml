@@ -26,7 +26,7 @@ messages:
     - "&e/area &8- &7shows this help"
     - "&e/area create <region> <name> &8- &7create new discoverable area"
     - "&e/area delete <name> &8- &7remove a discoverable area"
-    - "&e/area setexp <name> <amount> &8- &7set xp reward for area"
+    - "&e/area setexp <amount> <name> &8- &7set xp reward for area"
     - "&e/area reset [player] &8- &7remove yours/player's progress"
     - "&e/area setdesc <name> &8- &7set area's new description"
     - "&e/area command list <area> &8- &7shows all area's reward commands"
