@@ -1,5 +1,6 @@
 name: DiscoverAreas
-version: 1.4.0-B2
+version: 1.4.0-B3
+load: POSTWORLD
 main: net.ignissak.discoverareas.DiscoverMain
 api-version: 1.13
 depend: [WorldGuard]
