@@ -156,11 +156,11 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             ChatInfo.success(player, "XP gained for discovery of area '" + name + "' was set to " + xp + ".");
                             break;
                         } catch (NumberFormatException e) {
-                            ChatInfo.error(player, "Could not format XP value. Example: /area setxp 100 Northern Kingdom");
+                            ChatInfo.error(player, "Could not format XP value. Example: /area setxp Northern Kingdom 100");
                             break;
                         }
                     } else {
-                        ChatInfo.error(player, "Usage: /area setxp <xp> <name>");
+                        ChatInfo.error(player, "Usage: /area setxp <name> <xp>");
                         break;
                     }
                 case "setdescription":
