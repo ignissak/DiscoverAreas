@@ -186,7 +186,7 @@ public final class DiscoverMain extends JavaPlugin {
     }
 
     private void hookWorldGuard() {
-        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null && Bukkit.getPluginManager().getPlugin("WorldBukkit") != null) {
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
             try {
                 worldGuard = WGBukkit.getPlugin();
                 regionContainer = worldGuard.getRegionContainer();
@@ -196,7 +196,7 @@ public final class DiscoverMain extends JavaPlugin {
             }
             return;
         }
-        getSmartLogger().severe("Could not hook WorldGuard & WorldEdit! It looks like you do not have WorldGuard installed on your server.");
+        getSmartLogger().severe("Could not hook WorldGuard! It looks like you do not have WorldGuard installed on your server.");
         getSmartLogger().info("Turning off...");
         Bukkit.getPluginManager().disablePlugin(this);
     }

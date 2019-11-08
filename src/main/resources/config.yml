@@ -77,7 +77,7 @@ gui:
         - "&fDescription:"
         - "&7@description"
     notdiscovered:
-      material: WRITABLE_BOOK
+      material: PAPER
       glowing: false
       displayname: "&c@area"
       lore:
