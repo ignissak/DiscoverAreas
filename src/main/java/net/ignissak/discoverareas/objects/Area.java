@@ -330,4 +330,14 @@ public class Area {
         });
         this.discoveredBy = out;
     }
+
+    /**
+     * Check if player has discovered this area
+     * @param player
+     * @return boolean if player has discovered this area
+     */
+
+    public boolean hasDiscovered(DiscoverPlayer player) {
+        return player.hasDiscovered(this.getName());
+    }
 }

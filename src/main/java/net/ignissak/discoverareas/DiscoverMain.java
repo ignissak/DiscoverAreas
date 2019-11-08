@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +76,7 @@ public final class DiscoverMain extends JavaPlugin {
 
         this.getCommand("area").setExecutor(new AreaCommand());
         this.getCommand("area").setTabCompleter(new AreaCommand());
-       // this.getCommand("areas").setExecutor(new AreasCommand());
+        this.getCommand("areas").setExecutor(new AreasCommand());
         this.getCommand(".areas").setExecutor(new AdminAreasCommand());
         Bukkit.getPluginManager().registerEvents(new DiscoverManager(), this);
 
@@ -112,6 +113,7 @@ public final class DiscoverMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        reloadFiles();
         instance = null;
     }
 
@@ -163,7 +165,7 @@ public final class DiscoverMain extends JavaPlugin {
         return resourceID;
     }
 
-    public static DiscoverPlayer getDiscoverPlayer(Player player) {
+    @Nullable public static DiscoverPlayer getDiscoverPlayer(Player player) {
         if (players.containsKey(player)) return players.get(player);
         else return null;
     }

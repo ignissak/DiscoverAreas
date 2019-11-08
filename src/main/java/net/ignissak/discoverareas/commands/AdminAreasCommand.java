@@ -1,6 +1,7 @@
 package net.ignissak.discoverareas.commands;
 
 import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.utils.ChatInfo;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,6 +15,16 @@ public class AdminAreasCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (!player.hasPermission("discoverareas.admin")) return true;
+
+        if (DiscoverMain.getInstance().getCache().size() <= 0) {
+            ChatInfo.info(player, "There are no areas to view.");
+            return true;
+        }
+
+        if (!DiscoverMain.getConfiguration().getBoolean("menus.admin.enabled")) {
+            ChatInfo.error(player, "You cannot view this menu.");
+            return true;
+        }
 
         if (DiscoverMain.getInstance().getCache().size() <= 45) {
             player.openInventory(DiscoverMain.getMenuManager().getMenu("adminMenu").getInventory());

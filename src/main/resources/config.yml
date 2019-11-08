@@ -44,6 +44,18 @@ messages:
     messages:
       - "&aYou are entering @area"
 
+menus:
+  user:
+    enabled: true
+    titles:
+      nopage: "User menu"
+      page: "User menu #@page"
+  admin:
+    enabled: true
+    titles:
+      nopage: "Admin menu"
+      page: "Admin menu #@page"
+
 gui:
   list:
     admin:
@@ -56,6 +68,22 @@ gui:
         - "&7@description"
         - "&7Click to see commands."
         - "&7Shift-click to teleport."
+    discovered:
+      material: BOOK
+      glowing: true
+      displayname: "&a@area"
+      lore:
+        - "&aDiscovered"
+        - "&fDescription:"
+        - "&7@description"
+    notdiscovered:
+      material: WRITABLE_BOOK
+      glowing: false
+      displayname: "&c@area"
+      lore:
+        - "&cNot Discovered"
+        - "&fDescription:"
+        - "&7@description"
   previous:
     material: ARROW
     displayname: "&7Previous page"
