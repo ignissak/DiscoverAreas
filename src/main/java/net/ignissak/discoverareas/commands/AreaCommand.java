@@ -131,10 +131,10 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                 case "setexp":
                 case "setxp":
                     // /area setxp <name> <xp>
-                    if (args.length >= 3) {
+                    if (args.length >= 2) {
                         try {
                             StringBuilder sb = new StringBuilder();
-                            for (int i = 2; i < args.length; i++) {
+                            for (int i = 1; i < args.length; i++) {
                                 sb.append(args[i]);
                                 if (i + 1 != args.length) {
                                     sb.append(" ");
@@ -142,7 +142,6 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             }
 
                             String name = sb.toString();
-                            Integer xp = Integer.parseInt(args[0 + name.split(" ").length]);
 
                             if (!DiscoverMain.getInstance().existsArea(name)) {
                                 ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
@@ -150,17 +149,28 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             }
 
                             Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
-                            area.setXp(xp);
-                            area.updateData();
 
-                            ChatInfo.success(player, "XP gained for discovery of area '" + name + "' was set to " + xp + ".");
+                            ChatInfo.info(player, "Insert new reward XP value, type 'cancel' to cancel.");
+                            ChatInput chatInput = new ChatInput(player);
+                            chatInput.setChatInputCompleteMethod((p, m) -> {
+                                try {
+                                    int xp = Integer.parseInt(m);
+                                    area.setXp(xp);
+                                    area.updateData();
+                                    ChatInfo.success(player, "XP gained for discovery of area '" + name + "' was set to " + xp + ".");
+                                } catch (Exception e) {
+                                    if (e instanceof NumberFormatException) {
+                                        ChatInfo.error(player, "Entry was not a number, try again.");
+                                    } else ChatInfo.error(player, "There was an error while removing command.");
+                                }
+                            });
                             break;
                         } catch (NumberFormatException e) {
                             ChatInfo.error(player, "Could not format XP value. Example: /area setxp Northern Kingdom 100");
                             break;
                         }
                     } else {
-                        ChatInfo.error(player, "Usage: /area setxp <name> <xp>");
+                        ChatInfo.error(player, "Usage: /area setxp <name>");
                         break;
                     }
                 case "setdescription":
