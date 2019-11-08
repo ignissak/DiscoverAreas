@@ -113,7 +113,6 @@ public final class DiscoverMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        reloadFiles();
         instance = null;
     }
 
