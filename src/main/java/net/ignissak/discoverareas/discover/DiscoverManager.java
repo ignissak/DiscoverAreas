@@ -32,7 +32,7 @@ public class DiscoverManager implements Listener {
             if (DiscoverMain.getInstance().isUpdateAvailable() && DiscoverMain.getConfiguration().getBoolean("general.update-notify")) {
                 player.sendMessage(ChatColor.RED + "Your servers is running out-of-date version of DiscoverAreas (" + DiscoverMain.getInstance().getDescription().getVersion() + ").");
                 player.sendMessage(ChatColor.RED + "Download new version (" + DiscoverMain.getInstance().getNewVersion() + ") on spigot page: ");
-                player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-13." + DiscoverMain.getInstance().getResourceID() + "/");
+                player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-12." + DiscoverMain.getInstance().getResourceID() + "/");
             }
         }
 
