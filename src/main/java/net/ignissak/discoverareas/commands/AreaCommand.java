@@ -129,7 +129,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                     }
                 case "setexp":
                 case "setxp":
-                    // /area setxp <xp> <name>
+                    // /area setxp <name> <xp>
                     if (args.length >= 3) {
                         try {
                             StringBuilder sb = new StringBuilder();
@@ -141,7 +141,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             }
 
                             String name = sb.toString();
-                            Integer xp = Integer.parseInt(args[1]);
+                            Integer xp = Integer.parseInt(args[0 + name.split(" ").length]);
 
                             if (!DiscoverMain.getInstance().existsArea(name)) {
                                 ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
