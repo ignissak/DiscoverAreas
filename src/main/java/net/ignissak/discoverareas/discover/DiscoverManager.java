@@ -35,6 +35,8 @@ public class DiscoverManager implements Listener {
                 player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-13." + DiscoverMain.getInstance().getResourceID() + "/");
             }
         }
+
+        DiscoverMain.getMenuManager().updateMenus();
     }
 
     @EventHandler

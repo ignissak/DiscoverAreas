@@ -1,7 +1,7 @@
 package net.ignissak.discoverareas.commands;
 
 import net.ignissak.discoverareas.DiscoverMain;
-import net.ignissak.discoverareas.discover.DiscoverPlayer;
+import net.ignissak.discoverareas.utils.ChatInfo;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,9 +14,23 @@ public class AreasCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull  String[] args) {
         if (!(sender instanceof Player)) return true;
         Player player = (Player) sender;
-        DiscoverPlayer discoverPlayer = DiscoverMain.getDiscoverPlayer(player);
 
-        //todo
+        if (DiscoverMain.getInstance().getCache().size() <= 0) {
+            ChatInfo.info(player, "There are no areas to view.");
+            return true;
+        }
+
+        if (!DiscoverMain.getConfiguration().getBoolean("menus.user.enabled")) {
+            ChatInfo.error(player, "You cannot view this menu.");
+            return true;
+        }
+
+        if (DiscoverMain.getInstance().getCache().size() <= 45) {
+            player.openInventory(DiscoverMain.getMenuManager().getMenu("userMenu_" + player.getName()).getInventory());
+        } else {
+            player.openInventory(DiscoverMain.getMenuManager().getMenu("userMenu_" + player.getName() + "_1").getInventory());
+        }
+
         return true;
     }
 }

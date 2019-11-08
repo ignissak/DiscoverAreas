@@ -481,6 +481,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
             out.add("reset");
             out.add("setdesc");
             out.add("command");
+            out.add("reload");
         }
 
         switch (args[0].toLowerCase()) {

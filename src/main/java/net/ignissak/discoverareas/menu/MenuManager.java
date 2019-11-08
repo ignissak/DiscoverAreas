@@ -2,6 +2,7 @@ package net.ignissak.discoverareas.menu;
 
 import com.google.common.collect.Lists;
 import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.menu.items.MenuItem;
 import net.ignissak.discoverareas.objects.Area;
 import net.ignissak.discoverareas.utils.ItemBuilder;
@@ -9,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -51,7 +53,72 @@ public class MenuManager {
         return null;
     }
 
+    public void updateUserMenu(Player player) {
+        DiscoverPlayer discoverPlayer = DiscoverMain.getDiscoverPlayer(player);
+        List<Area> areaList = new ArrayList<>(DiscoverMain.getInstance().getCache());
+        areaList.sort(Comparator.comparing(a -> a.hasDiscovered(discoverPlayer)));
+
+        if (areaList.size() <= 45) {
+            Iterator<Area> iterator = areaList.iterator();
+            MenuItem[] items = new MenuItem[54];
+            int i = 0;
+            while (iterator.hasNext()) {
+                Area a = iterator.next();
+                if (a.hasDiscovered(discoverPlayer)) {
+                    items[i] = new MenuItem(getDiscovered(a), p -> {}, false);
+                } else {
+                    items[i] = new MenuItem(getUndiscovered(a), p -> {}, false);
+                }
+                i++;
+                iterator.remove();
+
+                Menu userMenu = new Menu(DiscoverMain.getConfiguration().getString("menus.user.titles.nopage"), items);
+                this.menus.put("userMenu_" + player.getName(), userMenu);
+            }
+        } else {
+            //pages
+            List<List<Area>> pagesOfAreas = Lists.partition(areaList, 45);
+            int page = 1;
+            for (List<Area> areas : pagesOfAreas) {
+                MenuItem[] items = new MenuItem[54];
+                int i = 0;
+                for (Area a : areas) {
+                    if (a.hasDiscovered(discoverPlayer)) {
+                        items[i] = new MenuItem(getDiscovered(a), p -> {}, false);
+                    } else {
+                        items[i] = new MenuItem(getUndiscovered(a), p -> {}, false);
+                    }
+                    i++;
+                }
+
+                if (page < pagesOfAreas.size()) {
+                    int nextPage = page + 1;
+                    items[52] = new MenuItem(next, p -> {
+                        player.openInventory(getMenu("userMenu_" + player.getName() + "_" + nextPage).getInventory());
+                        player.playSound(player.getLocation(), Sound.BLOCK_GLASS_HIT, 1, 0);
+                    });
+                }
+                if (page > 1) {
+                    int previousPage = page - 1;
+                    items[46] = new MenuItem(previous, p -> {
+                        player.openInventory(getMenu("userMenu_" + player.getName() + "_" + previousPage).getInventory());
+                        player.playSound(player.getLocation(), Sound.BLOCK_GLASS_HIT, 1, 0);
+                    });
+                }
+
+
+                Menu adminMenu = new Menu(DiscoverMain.getConfiguration().getString("menus.user.titles.page").replace("@page", String.valueOf(page)), items);
+                this.menus.put("userMenu_" + player.getName() + "_" + page, adminMenu);
+
+                page++;
+            }
+        }
+    }
+
     public void updateMenus() {
+        this.menus.clear();
+        if (DiscoverMain.getConfiguration().getBoolean("menus.user.enabled")) Bukkit.getOnlinePlayers().forEach(this::updateUserMenu);
+        if (!DiscoverMain.getConfiguration().getBoolean("menus.admin.enabled")) return;
         List<Area> areasList = new ArrayList<>(DiscoverMain.getInstance().getCache());
         areasList.sort(Comparator.comparing(Area::getName));
 
@@ -71,7 +138,7 @@ public class MenuManager {
                 }, false);
             }
 
-            Menu adminMenu = new Menu("Areas | Admin menu", items);
+            Menu adminMenu = new Menu(DiscoverMain.getConfiguration().getString("menus.admin.titles.nopage"), items);
             this.menus.put("adminMenu", adminMenu);
         } else {
             //pages
@@ -106,7 +173,7 @@ public class MenuManager {
                 }
 
 
-                Menu adminMenu = new Menu("Areas | Admin menu #" + page, items);
+                Menu adminMenu = new Menu(DiscoverMain.getConfiguration().getString("menus.admin.titles.page").replace("@page", String.valueOf(page)), items);
                 this.menus.put("adminMenu" + page, adminMenu);
 
                 page++;
@@ -166,7 +233,7 @@ public class MenuManager {
                     .replace("@world", a.getWorld().getName())
                     .replace("@region", a.getRegion().getId())));
             ItemBuilder undiscovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.material")), 1)
-                    .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.displayname")))
+                    .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.displayname").replace("@area", a.getName())))
                     .setLore(lore);
             if (DiscoverMain.getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
 

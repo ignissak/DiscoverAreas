@@ -7,8 +7,11 @@ depend: [WorldGuard]
 authors: [iGniSsak]
 commands:
   area:
-    usage: /<command>
+    usage: /area
     description: General command
   ".areas":
-    usage: /<command>
+    usage: /.areas
     description: Admin menu
+  areas:
+    usage: /areas
+    description: User menu
