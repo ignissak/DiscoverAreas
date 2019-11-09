@@ -83,7 +83,7 @@ public final class DiscoverMain extends JavaPlugin {
         new UpdateChecker(this, resourceID).getVersion(version -> {
             DefaultArtifactVersion spigotVersion = new DefaultArtifactVersion(version);
             DefaultArtifactVersion pluginVersion = new DefaultArtifactVersion(getDescription().getVersion());
-            if (pluginVersion.compareTo(spigotVersion) > 0) {
+            if (pluginVersion.compareTo(spigotVersion) >= 0) {
                 if (getConfiguration().getBoolean("general.update-notify")) getSmartLogger().info("Your server is running latest version of DiscoverAreas (" + this.getDescription().getVersion() + ").");
             } else {
                 if (getConfiguration().getBoolean("general.update-notify")) {
