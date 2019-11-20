@@ -14,15 +14,21 @@ public class AdminAreasCommand implements CommandExecutor {
         if (!(sender instanceof Player)) return true;
         Player player = (Player) sender;
 
-        if (!player.hasPermission("discoverareas.admin")) return true;
+        if (!player.hasPermission("discoverareas.admin.areas")) {
+            if (DiscoverMain.getConfiguration().getString("messages.no_permission") == "") return true;
+            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.no_permission"));
+            return true;
+        }
 
         if (DiscoverMain.getInstance().getCache().size() <= 0) {
-            ChatInfo.info(player, "There are no areas to view.");
+            if (DiscoverMain.getConfiguration().getString("messages.no_areas") == "") return true;
+            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.no_areas"));
             return true;
         }
 
         if (!DiscoverMain.getConfiguration().getBoolean("menus.admin.enabled")) {
-            ChatInfo.error(player, "You cannot view this menu.");
+            if (DiscoverMain.getConfiguration().getString("messages.disabled_menu") == "") return true;
+            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.disabled_menu"));
             return true;
         }
 

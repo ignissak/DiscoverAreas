@@ -219,7 +219,7 @@ public final class DiscoverMain extends JavaPlugin {
                     getSmartLogger().error("Invalid world name '" + config.getString("world") + "' for area '" + key + "'.");
                     return;
                 }
-                Area a = new Area(rm.getRegion(config.getString("region")), w, key, config.getString("description"), config.getInt("xp"), Sound.valueOf(config.getString("sound")), config.getStringList("commands"));
+                Area a = new Area(rm.getRegion(config.getString("region")), w, key, config.getString("description"), config.getInt("xp"), Sound.valueOf(config.getString("sound")), config.getStringList("commands"), config.getLong("created"));
                 this.cache.add(a);
             } catch (NullPointerException e) {
                 getSmartLogger().error("Error while loading area: " + key);

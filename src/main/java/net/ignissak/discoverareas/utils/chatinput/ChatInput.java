@@ -7,18 +7,22 @@ import org.bukkit.entity.Player;
 import java.util.HashMap;
 
 public class ChatInput {
+
     private Player p;
+    private ChatInputType chatInputType;
     private ChatInputCompleteMethod completeMethod;
     private PlayerRunnable exitMethod;
 
     private static HashMap<Player, ChatInput> inputPlayers = new HashMap<>();
 
-    public ChatInput(Player p){
+    public ChatInput(Player p, ChatInputType chatInputType) {
         this.p = p;
+        this.chatInputType = chatInputType;
         inputPlayers.put(p, this);
         this.completeMethod = (pl, m) -> {};
         this.exitMethod = pl -> {
             ChatInfo.info(pl, "Operation cancelled.");
+            inputPlayers.remove(p);
         };
     }
 
@@ -52,5 +56,9 @@ public class ChatInput {
 
     public static boolean isStopMessage(String message){
         return message.equalsIgnoreCase("cancel");
+    }
+
+    public ChatInputType getChatInputType() {
+        return chatInputType;
     }
 }

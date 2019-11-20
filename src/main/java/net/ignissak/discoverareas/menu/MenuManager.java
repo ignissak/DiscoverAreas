@@ -5,6 +5,7 @@ import net.ignissak.discoverareas.DiscoverMain;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.menu.items.MenuItem;
 import net.ignissak.discoverareas.objects.Area;
+import net.ignissak.discoverareas.utils.DateUtils;
 import net.ignissak.discoverareas.utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +14,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MenuManager {
@@ -65,7 +67,7 @@ public class MenuManager {
             while (iterator.hasNext()) {
                 Area a = iterator.next();
                 if (a.hasDiscovered(discoverPlayer)) {
-                    items[i] = new MenuItem(getDiscovered(a), p -> {}, false);
+                    items[i] = new MenuItem(getDiscovered(a, discoverPlayer), p -> {}, false);
                 } else {
                     items[i] = new MenuItem(getUndiscovered(a), p -> {}, false);
                 }
@@ -84,7 +86,7 @@ public class MenuManager {
                 int i = 0;
                 for (Area a : areas) {
                     if (a.hasDiscovered(discoverPlayer)) {
-                        items[i] = new MenuItem(getDiscovered(a), p -> {}, false);
+                        items[i] = new MenuItem(getDiscovered(a, discoverPlayer), p -> {}, false);
                     } else {
                         items[i] = new MenuItem(getUndiscovered(a), p -> {}, false);
                     }
@@ -128,7 +130,9 @@ public class MenuManager {
             int i = 0;
             while (iterator.hasNext()) {
                 Area a = iterator.next();
-                items[i] = new MenuItem(getAdmin(a), a::sendCommands, a::teleport, true);
+                items[i] = new MenuItem(getAdmin(a), p -> {
+                    openAreaGUI(p, a);
+                }, a::teleport, true);
                 i++;
                 iterator.remove();
             }
@@ -148,7 +152,9 @@ public class MenuManager {
                 MenuItem[] items = new MenuItem[54];
                 int i = 0;
                 for (Area a : areas) {
-                    items[i] = new MenuItem(getAdmin(a), a::sendCommands, a::teleport, true);
+                    items[i] = new MenuItem(getAdmin(a), p -> {
+                      openAreaGUI(p, a);
+                    }, a::teleport, true);
                     i++;
                 }
 
@@ -208,36 +214,69 @@ public class MenuManager {
         return discovered.build();
     }
 
-        private ItemStack getDiscovered(Area a) {
-            List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.discovered.lore");
-            List<String> lore = new ArrayList<>();
-            for (String s : configLore) lore.add(ChatColor.translateAlternateColorCodes('&', s
-                    .replace("@area", a.getName())
-                    .replace("@description", a.getDescription())
-                    .replace("@world", a.getWorld().getName())
-                    .replace("@region", a.getRegion().getId())));
-            ItemBuilder discovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.discovered.material")), 1)
-                    .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.discovered.displayname").replace("@area", a.getName())))
-                    .setLore(lore);
-            if (DiscoverMain.getConfiguration().getBoolean("gui.list.discovered.glowing")) discovered.setGlowing();
+    private ItemStack getDiscovered(Area a, DiscoverPlayer player) {
+        List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.discovered.lore");
+        List<String> lore = new ArrayList<>();
+        for (String s : configLore) lore.add(ChatColor.translateAlternateColorCodes('&', s
+                .replace("@area", a.getName())
+                .replace("@description", a.getDescription())
+                .replace("@world", a.getWorld().getName())
+                .replace("@date", DateUtils.formatDate(player.getDiscovered().get(a.getName())))
+                .replace("@region", a.getRegion().getId())));
+        ItemBuilder discovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.discovered.material")), 1)
+                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.discovered.displayname").replace("@area", a.getName())))
+                .setLore(lore);
+        if (DiscoverMain.getConfiguration().getBoolean("gui.list.discovered.glowing")) discovered.setGlowing();
             
-            return discovered.build();
-        }
+        return discovered.build();
+    }
 
-        private ItemStack getUndiscovered(Area a) {
-            List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.notdiscovered.lore");
-            List<String> lore = new ArrayList<>();
-            for (String s : configLore) lore.add(ChatColor.translateAlternateColorCodes('&', s
-                    .replace("@area", a.getName())
-                    .replace("@description", a.getDescription())
-                    .replace("@world", a.getWorld().getName())
-                    .replace("@region", a.getRegion().getId())));
-            ItemBuilder undiscovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.material")), 1)
-                    .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.displayname").replace("@area", a.getName())))
-                    .setLore(lore);
-            if (DiscoverMain.getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
+    private ItemStack getUndiscovered(Area a) {
+        List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.notdiscovered.lore");
+        List<String> lore = new ArrayList<>();
+        for (String s : configLore) lore.add(ChatColor.translateAlternateColorCodes('&', s
+                .replace("@area", a.getName())
+                .replace("@description", a.getDescription())
+                .replace("@world", a.getWorld().getName())
+                .replace("@region", a.getRegion().getId())));
+        ItemBuilder undiscovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.material")), 1)
+                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.displayname").replace("@area", a.getName())))
+                .setLore(lore);
+        if (DiscoverMain.getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
 
-            return undiscovered.build();
-        }
+        return undiscovered.build();
+    }
 
+    private Menu getAreaGUI(Area area) {
+        MenuItem[] items = new MenuItem[9];
+
+        items[2] = new MenuItem(new ItemBuilder(Material.COMMAND_BLOCK, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aRewards"))
+                .setLore(ChatColor.translateAlternateColorCodes('&', "&7Commands: &f" + area.getRewardCommands().size()),
+                        ChatColor.translateAlternateColorCodes('&', "&7XP reward: &f" + area.getXp()),
+                        ChatColor.translateAlternateColorCodes('&', "&7Click to view commands."))
+                .build(),
+                area::sendCommands ,true);
+        items[3] = new MenuItem(new ItemBuilder(Material.FEATHER, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aStatistics"))
+                .setLore(ChatColor.translateAlternateColorCodes('&', "&7Region: &f" + area.getRegion().getId()),
+                        ChatColor.translateAlternateColorCodes('&', "&7World: &f" + area.getWorld().getName()),
+                        ChatColor.translateAlternateColorCodes('&', "&7Discovered: &f" + area.getDiscoveredBy().size()),
+                        ChatColor.translateAlternateColorCodes('&', "&7Created: &f" + DateUtils.formatDate(area.getCreatedAt())))
+                .build(),
+                p -> {}, false);
+        items[4] = new MenuItem(new ItemBuilder(Material.MUSIC_DISC_13, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aSound"))
+                .setLore(ChatColor.translateAlternateColorCodes('&', "&7Discovery sound:"),
+                        ChatColor.translateAlternateColorCodes('&', "&f" + area.getDiscoverySound().toString()),
+                        ChatColor.translateAlternateColorCodes('&', "&7Click to listen."),
+                        ChatColor.translateAlternateColorCodes('&', "&7Shift-click to change."))
+                .build(),
+                p -> p.playSound(p.getLocation(), area.getDiscoverySound(), 1, 0), p -> p.performCommand("area setsound " + area.getName()),true);
+
+        Menu menu = new Menu("Area: " + area.getName(), items);
+        this.menus.put("area_" + area.getName(), menu);
+        return menu;
+    }
+
+    public void openAreaGUI(Player player, Area area) {
+        player.openInventory(getAreaGUI(area).getInventory());
+    }
 }

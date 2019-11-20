@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 public class MenuItem {
 
     private ItemStack itemStack;
-    private PlayerRunnable method, shiftMethod;
+    private PlayerRunnable method, shiftMethod, rightMethod;
     private MenuItemUpdateMethod updateMethod;
     private boolean closing = false, update = false;
 
@@ -50,6 +50,14 @@ public class MenuItem {
         this.closing = closing;
     }
 
+    public MenuItem(ItemStack itemStack, PlayerRunnable method, PlayerRunnable shiftMethod, PlayerRunnable rightMethod, boolean closing) {
+        this.itemStack = itemStack;
+        this.method = method;
+        this.shiftMethod = shiftMethod;
+        this.rightMethod = rightMethod;
+        this.closing = closing;
+    }
+
 
     public PlayerRunnable getMethod() {
         return method;
@@ -57,6 +65,10 @@ public class MenuItem {
 
     public PlayerRunnable getShiftMethod() {
         return shiftMethod;
+    }
+
+    public PlayerRunnable getRightMethod() {
+        return rightMethod;
     }
 
     public boolean isClosing() {

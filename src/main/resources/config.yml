@@ -2,6 +2,17 @@
 # so you would get notified when the stable version is released
 general:
   update-notify: true
+  # y   = year   (yy or yyyy)
+  #M   = month  (MM)
+  #d   = day in month (dd)
+  #h   = hour (0-12)  (hh)
+  #H   = hour (0-23)  (HH)
+  #m   = minute in hour (mm)
+  #s   = seconds (ss)
+  #S   = milliseconds (SSS)
+  #z   = time zone  text        (e.g. Pacific Standard Time...)
+  #Z   = time zone, time offset (e.g. -0800)
+  date-format: "dd.MM.yy HH:mm:ss"
 
 title:
   on_discover:
@@ -16,6 +27,7 @@ title:
     enabled: true
     title: "&a&l@area"
     subtitle: "&f@description"
+    # Values are in seconds
     fadein: 1
     stay: 3
     fadeout: 1
@@ -29,6 +41,7 @@ messages:
     - "&e/area setexp <name> &8- &7set xp reward for area"
     - "&e/area reset [player] &8- &7remove yours/player's progress"
     - "&e/area setdesc <name> &8- &7set area's new description"
+    - "&e/area setsound <name> &8- &7set area's discovery sound"
     - "&e/area command list <area> &8- &7shows all area's reward commands"
     - "&e/area command add <name> &8- &7add new reward command to area"
     - "&e/area command remove <cmd_id> <area> &8- &7remove reward command"
@@ -43,6 +56,10 @@ messages:
     enabled: false
     messages:
       - "&aYou are entering @area"
+  # Leave blank if you want to disable this message
+  disabled_menu: "You cannot access this menu, because it is disabled."
+  no_permission: "You don't have permission to do this."
+  no_areas: "There are no areas to view."
 
 menus:
   user:
@@ -64,16 +81,17 @@ gui:
       displayname: "&a@area"
       lore:
         - "&fWorld: &7@world"
+        - "&fRegion: &7@region"
         - "&fDescription:"
         - "&7@description"
-        - "&7Click to see commands."
+        - "&7Click to open."
         - "&7Shift-click to teleport."
     discovered:
       material: BOOK
       glowing: true
       displayname: "&a@area"
       lore:
-        - "&aDiscovered"
+        - "&fDiscovered: §7@date"
         - "&fDescription:"
         - "&7@description"
     notdiscovered:

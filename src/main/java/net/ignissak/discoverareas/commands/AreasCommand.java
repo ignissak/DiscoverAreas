@@ -16,12 +16,20 @@ public class AreasCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (DiscoverMain.getInstance().getCache().size() <= 0) {
-            ChatInfo.info(player, "There are no areas to view.");
+            if (DiscoverMain.getConfiguration().getString("messages.no_areas") == "") return true;
+            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.no_areas"));
+            return true;
+        }
+
+        if (!player.hasPermission("discoverareas.user.areas")) {
+            if (DiscoverMain.getConfiguration().getString("messages.no_permission") == "") return true;
+            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.no_permission"));
             return true;
         }
 
         if (!DiscoverMain.getConfiguration().getBoolean("menus.user.enabled")) {
-            ChatInfo.error(player, "You cannot view this menu.");
+            if (DiscoverMain.getConfiguration().getString("messages.disabled_menu") == "") return true;
+            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.disabled_menu"));
             return true;
         }
 
