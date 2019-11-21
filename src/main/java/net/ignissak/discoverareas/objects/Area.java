@@ -31,11 +31,12 @@ public class Area {
     /**
      * Basic Area constructor
      * With these constructor you create new Area with exactly defined parameters
-     * @param region In which region is area located
-     * @param world In which world is area located
-     * @param name Name of area
-     * @param description Description of area
-     * @param xp XP reward of area
+     *
+     * @param region         In which region is area located
+     * @param world          In which world is area located
+     * @param name           Name of area
+     * @param description    Description of area
+     * @param xp             XP reward of area
      * @param discoverySound Discovery sound of area
      * @param rewardCommands Reward command of area
      */
@@ -56,6 +57,7 @@ public class Area {
 
     /**
      * Returns region in which is area located
+     *
      * @return ProtectedRegion object
      */
 
@@ -65,6 +67,7 @@ public class Area {
 
     /**
      * Returns world in which is area located
+     *
      * @return World object
      */
 
@@ -74,6 +77,7 @@ public class Area {
 
     /**
      * Returns List of reward commands
+     *
      * @return Reward commands
      */
 
@@ -83,6 +87,7 @@ public class Area {
 
     /**
      * Adds new reward command to the list
+     *
      * @param s Command
      */
     public void addRewardCommand(String s) {
@@ -91,6 +96,7 @@ public class Area {
 
     /**
      * Returns name of area
+     *
      * @return Name of area
      */
 
@@ -100,6 +106,7 @@ public class Area {
 
     /**
      * Returns number of experience player will get for discovery
+     *
      * @return Number of experience
      */
 
@@ -109,6 +116,7 @@ public class Area {
 
     /**
      * Sets amount of reward experience
+     *
      * @param xp New amount of experience
      */
 
@@ -118,6 +126,7 @@ public class Area {
 
     /**
      * Returns sound that player will hear after discovering area
+     *
      * @return Sound of discovery
      */
 
@@ -127,6 +136,7 @@ public class Area {
 
     /**
      * Sets discovery sound to a new value
+     *
      * @param discoverySound Desired sound
      */
 
@@ -136,9 +146,9 @@ public class Area {
 
     /**
      * Returns area description
+     *
      * @return Description
      */
-
 
 
     public String getDescription() {
@@ -147,6 +157,7 @@ public class Area {
 
     /**
      * Returns list of UUIDs of players that discovered this area
+     *
      * @return List of UUIDs
      */
 
@@ -157,6 +168,7 @@ public class Area {
 
     /**
      * Returns the long when the area was created
+     *
      * @return Time of creation
      */
 
@@ -166,6 +178,7 @@ public class Area {
 
     /**
      * Sets description to a new value
+     *
      * @param description New description
      */
 
@@ -222,6 +235,7 @@ public class Area {
     /**
      * Runs all needed methods to let player discover this area
      * Updates all data files & caches
+     *
      * @param discoverPlayer Player that discovered this area
      */
 
@@ -297,6 +311,7 @@ public class Area {
 
     /**
      * Sends classic command list command to a player
+     *
      * @param player Target player
      */
 
@@ -320,6 +335,7 @@ public class Area {
 
     /**
      * Teleports certain player to area region
+     *
      * @param player Target player
      */
 
@@ -336,8 +352,8 @@ public class Area {
         bottom.setZ(region.getMinimumPoint().getZ());
 
         //Split difference
-        double X =  ((bottom.getX() - top.getX())/2) + bottom.getX();
-        double Z =  ((bottom.getZ() - top.getZ())/2) + bottom.getZ();
+        double X = ((bottom.getX() - top.getX()) / 2) + bottom.getX();
+        double Z = ((bottom.getZ() - top.getZ()) / 2) + bottom.getZ();
 
         //Setup new location
         Location location = new Location(getWorld(), X, getWorld().getHighestBlockYAt((int) X, (int) Z), Z);
@@ -357,6 +373,7 @@ public class Area {
 
     /**
      * Check if player has discovered this area
+     *
      * @param player
      * @return boolean if player has discovered this area
      */

@@ -168,7 +168,7 @@ public class ItemBuilder {
      *
      * @return ItemBuilder
      */
-    public ItemBuilder setGlowing(){
+    public ItemBuilder setGlowing() {
         try {
             ItemMeta meta = is.getItemMeta();
             meta.addEnchant(Enchantment.DURABILITY, 0, true);

@@ -44,6 +44,7 @@ public class DiscoverPlayer {
 
     /**
      * Return's player instance of DiscoverPlayer
+     *
      * @return Player instance
      */
 
@@ -52,8 +53,9 @@ public class DiscoverPlayer {
     }
 
     /**
-        Returns List of areas that player has discovered
-        @return list of areas
+     * Returns List of areas that player has discovered
+     *
+     * @return list of areas
      **/
 
     public HashMap<String, Long> getDiscovered() {
@@ -62,6 +64,7 @@ public class DiscoverPlayer {
 
     /**
      * Returns List of areas that player has not discovered yet
+     *
      * @return List of areas
      */
 
@@ -76,6 +79,7 @@ public class DiscoverPlayer {
 
     /**
      * Reset player's progress of discovering areas
+     *
      * @throws NullPointerException
      */
 
@@ -87,6 +91,7 @@ public class DiscoverPlayer {
 
     /**
      * Adds new area to discovered list of player
+     *
      * @param a Discovered Area
      */
 
@@ -97,6 +102,7 @@ public class DiscoverPlayer {
 
     /**
      * Checks if player has discovered certain area
+     *
      * @param a Area
      * @return boolean
      */
@@ -111,7 +117,8 @@ public class DiscoverPlayer {
 
     public void reload() {
         HashMap<String, Long> discovered = new HashMap<>();
-        if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty()) this.discovered = discovered;
+        if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty())
+            this.discovered = discovered;
         else {
             for (String s : DiscoverMain.getData().getStringList(player.getUniqueId().toString())) {
                 String[] split = s.split(":");

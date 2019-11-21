@@ -61,6 +61,12 @@ messages:
   no_permission: "You don't have permission to do this."
   no_areas: "There are no areas to view."
 
+sounds:
+  info: "BLOCK_LADDER_HIT"
+  success: "ENTITY_EXPERIENCE_ORB_PICKUP"
+  error: "BLOCK_ANVIL_PLACE"
+  warning: "BLOCK_BEACON_POWER_SELECT"
+
 menus:
   user:
     enabled: true
@@ -84,8 +90,7 @@ gui:
         - "&fRegion: &7@region"
         - "&fDescription:"
         - "&7@description"
-        - "&7Click to open."
-        - "&7Shift-click to teleport."
+        - "&6Click to open."
     discovered:
       material: BOOK
       glowing: true

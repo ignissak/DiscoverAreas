@@ -19,22 +19,23 @@ public class ChatInput {
         this.p = p;
         this.chatInputType = chatInputType;
         inputPlayers.put(p, this);
-        this.completeMethod = (pl, m) -> {};
+        this.completeMethod = (pl, m) -> {
+        };
         this.exitMethod = pl -> {
             ChatInfo.info(pl, "Operation cancelled.");
             inputPlayers.remove(p);
         };
     }
 
-    public void finish(){
+    public void finish() {
         inputPlayers.remove(p);
     }
 
-    public void setChatInputCompleteMethod(ChatInputCompleteMethod method){
+    public void setChatInputCompleteMethod(ChatInputCompleteMethod method) {
         this.completeMethod = method;
     }
 
-    public void setChatInputExitMethod(PlayerRunnable method){
+    public void setChatInputExitMethod(PlayerRunnable method) {
         this.exitMethod = method;
     }
 
@@ -46,15 +47,15 @@ public class ChatInput {
         return exitMethod;
     }
 
-    public static boolean isInInputMode(Player p){
+    public static boolean isInInputMode(Player p) {
         return inputPlayers.containsKey(p);
     }
 
-    public static ChatInput getInput(Player p){
+    public static ChatInput getInput(Player p) {
         return inputPlayers.get(p);
     }
 
-    public static boolean isStopMessage(String message){
+    public static boolean isStopMessage(String message) {
         return message.equalsIgnoreCase("cancel");
     }
 

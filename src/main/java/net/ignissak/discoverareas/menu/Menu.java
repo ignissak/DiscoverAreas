@@ -38,7 +38,7 @@ public class Menu {
         return items;
     }
 
-    public void refreshItems(){
+    public void refreshItems() {
         for (int i = 0; i < items.length; i++) {
             if (items[i] == null) continue;
             inventory.setItem(i, items[i].getItemStack());
