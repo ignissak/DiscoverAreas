@@ -22,3 +22,4 @@ permissions:
   discoverareas.user:
     default: false
     children:
+      discoverareas.user.areas: true
