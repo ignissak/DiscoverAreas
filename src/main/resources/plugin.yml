@@ -13,3 +13,11 @@ commands:
   areas:
     usage: /areas
     description: User menu
+permissions:
+  discoverareas.*:
+    children:
+      discoverareas.admin.areas: true
+  discoverareas.user:
+    default: false
+    children:
+      discoverareas.user.areas: true
