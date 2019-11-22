@@ -262,7 +262,7 @@ public class MenuManager {
         items[2] = new MenuItem(new ItemBuilder(Material.COMMAND_BLOCK, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aRewards"))
                 .setLore(ChatColor.translateAlternateColorCodes('&', "&7Commands: &f" + area.getRewardCommands().size()),
                         ChatColor.translateAlternateColorCodes('&', "&7XP reward: &f" + area.getXp()),
-                        ChatColor.translateAlternateColorCodes('&', "&7Click to view commands."))
+                        ChatColor.translateAlternateColorCodes('&', "&6Click to view commands."))
                 .build(),
                 area::sendCommands, true);
         items[3] = new MenuItem(new ItemBuilder(Material.FEATHER, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aStatistics"))
@@ -276,8 +276,8 @@ public class MenuManager {
         items[4] = new MenuItem(new ItemBuilder(Material.MUSIC_DISC_13, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aSound"))
                 .setLore(ChatColor.translateAlternateColorCodes('&', "&7Discovery sound:"),
                         ChatColor.translateAlternateColorCodes('&', "&f" + area.getDiscoverySound().toString()),
-                        ChatColor.translateAlternateColorCodes('&', "&7Click to listen."),
-                        ChatColor.translateAlternateColorCodes('&', "&7Shift-click to change."))
+                        ChatColor.translateAlternateColorCodes('&', "&6Click to listen."),
+                        ChatColor.translateAlternateColorCodes('&', "&6Shift-click to change."))
                 .hideAllFlags()
                 .build(),
                 p -> p.playSound(p.getLocation(), area.getDiscoverySound(), 1, 0), p -> p.performCommand("area setsound " + area.getName()), false);
