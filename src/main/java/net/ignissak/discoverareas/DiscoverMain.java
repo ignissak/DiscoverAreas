@@ -222,8 +222,14 @@ public final class DiscoverMain extends JavaPlugin {
                     getSmartLogger().error("Invalid world name '" + config.getString("world") + "' for area '" + key + "'.");
                     return;
                 }
-                Area a = new Area(rm.getRegion(config.getString("region")), w, key, config.getString("description"), config.getInt("xp"), Sound.valueOf(config.getString("sound")), config.getStringList("commands"));
-                this.cache.add(a);
+                try {
+                    Sound s = Sound.valueOf(config.getString("sound"));
+                    Area a = new Area(rm.getRegion(config.getString("region")), w, key, config.getString("description"), config.getInt("xp"), s, config.getStringList("commands"), config.getLong("created"));
+                    this.cache.add(a);
+                } catch (IllegalArgumentException e) {
+                    getSmartLogger().error("Invalid sound name '" + config.getString("sound") + "' for area '" + key + "'.");
+                    return;
+                }
             } catch (NullPointerException e) {
                 getSmartLogger().error("Error while loading area: " + key);
                 e.printStackTrace();
@@ -257,6 +263,20 @@ public final class DiscoverMain extends JavaPlugin {
             getSmartLogger().error("Could not initialize GUI items. It seems you are using old version of config - look at Spigot page to update your config.");
             e.printStackTrace();
         }
+    }
+
+    private void checkSoundsValidality() {
+        getSmartLogger().info("Checking sounds...");
+        int count = 0;
+        for (String s : getConfiguration().getConfigurationSection("sounds").getKeys(false)) {
+            try {
+                Sound sound = Sound.valueOf(s);
+                count++;
+            } catch (IllegalArgumentException e) {
+                getSmartLogger().error(s + " is not a valid sound!");
+            }
+        }
+        getSmartLogger().success(count + " sound were successfully loaded.");
     }
 
     public boolean existsArea(String name) {

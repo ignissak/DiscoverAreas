@@ -5,13 +5,14 @@ import net.ignissak.discoverareas.menu.items.MenuItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 public class MenuListener implements Listener{
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onInventoryClickEvent(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) {
             return;
@@ -40,5 +41,6 @@ public class MenuListener implements Listener{
         } else {
             menuItem.getMethod().run(p);
         }
+        e.setCancelled(true);
     }
 }
