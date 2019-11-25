@@ -12,6 +12,7 @@ import net.ignissak.discoverareas.utils.chatinput.ChatInput;
 import net.ignissak.discoverareas.utils.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,9 +31,12 @@ public class DiscoverManager implements Listener {
 
         if (player.hasPermission("discoverareas.admin")) {
             if (DiscoverMain.getInstance().isUpdateAvailable() && DiscoverMain.getConfiguration().getBoolean("general.update-notify")) {
-                player.sendMessage(ChatColor.RED + "Your servers is running out-of-date version of DiscoverAreas (" + DiscoverMain.getInstance().getDescription().getVersion() + ").");
-                player.sendMessage(ChatColor.RED + "Download new version (" + DiscoverMain.getInstance().getNewVersion() + ") on spigot page: ");
-                player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-12." + DiscoverMain.getInstance().getResourceID() + "/");
+                Bukkit.getScheduler().runTaskLater(DiscoverMain.getInstance(), () -> {
+                    player.sendMessage(ChatColor.RED + "Your servers is running out-of-date version of DiscoverAreas (" + DiscoverMain.getInstance().getDescription().getVersion() + ").");
+                    player.sendMessage(ChatColor.RED + "Download new version (" + DiscoverMain.getInstance().getNewVersion() + ") on spigot page: ");
+                    player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-12." + DiscoverMain.getInstance().getResourceID() + "/");
+                    player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, 1, 1);
+                }, 40);
             }
         }
 

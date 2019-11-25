@@ -5,6 +5,7 @@ import net.ignissak.discoverareas.DiscoverMain;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.menu.items.MenuItem;
 import net.ignissak.discoverareas.objects.Area;
+import net.ignissak.discoverareas.utils.DateUtils;
 import net.ignissak.discoverareas.utils.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +14,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MenuManager {
@@ -249,8 +251,8 @@ public class MenuManager {
                 .setLore(lore);
         if (DiscoverMain.getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
 
-            return undiscovered.build();
-        }
+        return undiscovered.build();
+    }
 
     private Menu getAreaGUI(Area area) {
         MenuItem[] items = new MenuItem[9];

@@ -1,5 +1,5 @@
 name: DiscoverAreas
-version: 1.6.2-SNAPSHOT-1_12
+load: POSTWORLD
 main: net.ignissak.discoverareas.DiscoverMain
 depend: [WorldGuard]
 authors: [iGniSsak]
@@ -20,4 +20,3 @@ permissions:
   discoverareas.user:
     default: false
     children:
-      discoverareas.user.areas: true

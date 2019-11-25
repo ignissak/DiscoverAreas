@@ -1,5 +1,7 @@
 package net.ignissak.discoverareas.commands;
 
+import com.google.common.collect.Lists;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.ignissak.discoverareas.DiscoverMain;
@@ -7,6 +9,7 @@ import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.objects.Area;
 import net.ignissak.discoverareas.utils.ChatInfo;
 import net.ignissak.discoverareas.utils.chatinput.ChatInput;
+import net.ignissak.discoverareas.utils.chatinput.ChatInputType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -77,7 +80,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             }
 
                             ProtectedRegion region = rm.getRegion(regionName);
-                            Area area = new Area(region, w, name, "Default description - change in config.", 0, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, new ArrayList<>());
+                            Area area = new Area(region, w, name, "Default description - change in config.", 0, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, new ArrayList<>(), System.currentTimeMillis());
 
                             area.addToCache();
                             DiscoverMain.getMenuManager().updateMenus();
@@ -150,7 +153,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
 
                             ChatInfo.info(player, "Insert new reward XP value, type 'cancel' to cancel.");
-                            ChatInput chatInput = new ChatInput(player);
+                            ChatInput chatInput = new ChatInput(player, ChatInputType.EDIT_EXP);
                             chatInput.setChatInputCompleteMethod((p, m) -> {
                                 try {
                                     int xp = Integer.parseInt(m);
@@ -191,7 +194,6 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                 break;
                             }
 
-                            player.closeInventory();
                             Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
 
                             ChatInfo.info(player, "Insert new sound, type 'cancel' to cancel.");
@@ -242,7 +244,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
 
                             ChatInfo.info(player, "Enter new description. Type 'cancel' if you want to cancel.");
-                            ChatInput chatInput = new ChatInput(player);
+                            ChatInput chatInput = new ChatInput(player, ChatInputType.EDIT_DESCRIPTION);
                             chatInput.setChatInputCompleteMethod((p, m) -> {
                                 try {
                                     area.setDescription(m);
@@ -377,7 +379,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
                                 ChatInfo.info(player, "Enter new command you would like to add, to cancel type 'cancel'.");
                                 ChatInfo.info(player, "Use @player placeholder for player's nick.");
-                                ChatInput chatInput = new ChatInput(player);
+                                ChatInput chatInput = new ChatInput(player, ChatInputType.ADD_COMMAND);
                                 chatInput.setChatInputCompleteMethod((p, m) -> {
                                     try {
                                         area.addRewardCommand(m);
@@ -389,16 +391,17 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                 });
                                 break;
                             case "remove":
-                                //area command remove <name>
+                                //area command remove <id> <name>
                                 try {
                                     StringBuilder sb2 = new StringBuilder();
-                                    for (int i = 2; i < args.length; i++) {
+                                    for (int i = 3; i < args.length; i++) {
                                         sb2.append(args[i]);
                                         if (i + 1 != args.length) {
                                             sb2.append(" ");
                                         }
                                     }
                                     String name2 = sb2.toString();
+                                    int id = Integer.parseInt(args[2]);
 
                                     if (!DiscoverMain.getInstance().existsArea(name2)) {
                                         ChatInfo.error(player, "Area with name '" + name2 + "' does not exist.");
@@ -412,24 +415,18 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                         break;
                                     }
 
-                                    if (area2.getRewardCommands().size() == 1) {
-                                        ChatInfo.info(player, "Enter ID of command (available: 0), to cancel type 'cancel'.");
-                                    } else {
-                                        ChatInfo.info(player, "Enter ID of command (available: 0-" + (area2.getRewardCommands().size() - 1) +"), to cancel type 'cancel'.");
-                                    }
-                                    ChatInput chatInput2 = new ChatInput(player);
-                                    chatInput2.setChatInputCompleteMethod((p, m) -> {
-                                        try {
-                                            int id = Integer.parseInt(m);
-                                            area2.getRewardCommands().remove(id);
-                                            area2.updateData();
-                                            ChatInfo.success(player, "Successfully removed command with ID " + id + " for area '" + name2 + "'.");
-                                        } catch (Exception e) {
-                                            if (e instanceof NumberFormatException) {
-                                                ChatInfo.error(player, "Entry was not a number, try again.");
-                                            } else ChatInfo.error(player, "There was an error while removing command.");
+                                    if (id > area2.getRewardCommands().size() - 1 || id < 0) {
+                                        if (area2.getRewardCommands().size() == 1) {
+                                            ChatInfo.error(player, "Invalid ID of command. Range: 0");
+                                        } else {
+                                            ChatInfo.error(player, "Invalid ID of command. Range: 0-" + (area2.getRewardCommands().size() - 1));
                                         }
-                                    });
+                                        break;
+                                    }
+
+                                    area2.getRewardCommands().remove(id);
+                                    area2.updateData();
+                                    ChatInfo.success(player, "Successfully removed command with ID " + id + " for area '" + name2 + "'.");
                                     break;
                                 } catch (Exception e) {
                                     ChatInfo.error(player, "Usage: /area command remove <area>");
@@ -467,7 +464,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
                                     ChatInfo.info(player, "Enter new command to replace, to cancel type 'cancel'.");
                                     ChatInfo.info(player, "Use @player placeholder for player's nick.");
-                                    ChatInput chatInput2 = new ChatInput(player);
+                                    ChatInput chatInput2 = new ChatInput(player, ChatInputType.EDIT_COMMAND);
                                     chatInput2.setChatInputCompleteMethod((p, m) -> {
                                         try {
                                             area2.getRewardCommands().set(id, m);
@@ -529,6 +526,8 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
         if (!(sender instanceof Player)) return null;
         Player player = (Player) sender;
 
+        if (!command.getName().equalsIgnoreCase("area")) return null;
+
         if (args.length == 1) {
             out.add("create");
             out.add("delete");
@@ -537,6 +536,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
             out.add("setdesc");
             out.add("command");
             out.add("reload");
+            out.add("setsound");
         }
 
         switch (args[0].toLowerCase()) {
@@ -573,11 +573,9 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                 } else if (args.length > 2) {
                     switch (args[1].toLowerCase()) {
                         case "remove":
-                            if (args.length == 4)
-                                DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                            if (args.length == 4) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
                             break;
                         case "add":
-                        case "remove":
                         case "list":
                             DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
                             break;

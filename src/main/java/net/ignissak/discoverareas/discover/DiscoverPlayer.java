@@ -5,25 +5,39 @@ import net.ignissak.discoverareas.objects.Area;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class DiscoverPlayer {
 
     private Player player;
-    private List<String> discovered;
+    private HashMap<String, Long> discovered;
 
     DiscoverPlayer(Player player) {
         this.player = player;
-        if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty()) discovered = new ArrayList<>();
+        this.discovered = new HashMap<>();
+        if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty()) return;
         else {
-            this.discovered = new ArrayList<>(DiscoverMain.getData().getStringList(player.getUniqueId().toString()));
+            for (String s : DiscoverMain.getData().getStringList(player.getUniqueId().toString())) {
+                String[] split = s.split(":");
+                if (split.length != 2) {
+                    // discovery time not defined
+                    this.discovered.put(split[0], 0L);
+                } else {
+                    this.discovered.put(split[0], Long.valueOf(split[1]));
+                }
+            }
         }
     }
 
     private void saveToData() {
         if (getDiscovered().size() == 0) return;
-        List<String> list = this.getDiscovered();
+        HashMap<String, Long> map = this.getDiscovered();
+        List<String> list = new ArrayList<>();
+        for (String key : map.keySet()) {
+            list.add(key + ":" + map.get(key));
+        }
         DiscoverMain.getData().set(player.getUniqueId().toString(), list);
         DiscoverMain.getInstance().saveFiles();
     }
@@ -44,7 +58,7 @@ public class DiscoverPlayer {
      * @return list of areas
      **/
 
-    public List<String> getDiscovered() {
+    public HashMap<String, Long> getDiscovered() {
         return this.discovered;
     }
 
@@ -57,7 +71,7 @@ public class DiscoverPlayer {
     public List<Area> getNotDiscovered() {
         List<Area> out = new ArrayList<>();
         for (Area a : DiscoverMain.getInstance().getCache()) {
-            if (getDiscovered().contains(a.getName())) continue;
+            if (getDiscovered().containsKey(a.getName())) continue;
             out.add(a);
         }
         return out;
@@ -82,7 +96,7 @@ public class DiscoverPlayer {
      */
 
     public void addDiscoveredArea(Area a) {
-        this.discovered.add(a.getName());
+        this.discovered.put(a.getName(), System.currentTimeMillis());
         this.saveToData();
     }
 
@@ -94,7 +108,7 @@ public class DiscoverPlayer {
      */
 
     public boolean hasDiscovered(String a) {
-        return discovered.contains(a);
+        return discovered.containsKey(a);
     }
 
     /**
@@ -103,10 +117,17 @@ public class DiscoverPlayer {
 
     public void reload() {
         HashMap<String, Long> discovered = new HashMap<>();
-        if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty())
-            this.discovered = discovered;
+        if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty()) this.discovered = discovered;
         else {
-            this.discovered = new ArrayList<>(DiscoverMain.getData().getStringList(player.getUniqueId().toString()));
+            for (String s : DiscoverMain.getData().getStringList(player.getUniqueId().toString())) {
+                String[] split = s.split(":");
+                if (split.length != 2) {
+                    // discovery time not defined
+                    discovered.put(s, 0L);
+                } else {
+                    discovered.put(s, Long.valueOf(split[1]));
+                }
+            }
         }
     }
 }

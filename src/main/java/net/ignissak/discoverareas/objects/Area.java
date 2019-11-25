@@ -25,34 +25,7 @@ public class Area {
     private Sound discoverySound;
     private ConfigurationSection configurationSection;
     private List<UUID> discoveredBy;
-
-    Area(String name) {
-        Area cached = DiscoverMain.getInstance().getCache().stream().filter(area -> area.getName().equalsIgnoreCase(name)).findFirst().get();
-        this.region = cached.getRegion();
-        this.world = cached.getWorld();
-        this.description = cached.getDescription();
-        this.xp = cached.getXp();
-        this.rewardCommands = cached.getRewardCommands();
-        this.discoverySound = cached.getDiscoverySound();
-        this.name = cached.getName();
-
-        this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
-        this.initDiscoveredBy();
-    }
-
-    Area(ProtectedRegion region) {
-        Area cached = DiscoverMain.getInstance().getCache().stream().filter(area -> area.getRegion().equals(region)).findFirst().get();
-        this.region = cached.getRegion();
-        this.world = cached.getWorld();
-        this.description = cached.getDescription();
-        this.xp = cached.getXp();
-        this.rewardCommands = cached.getRewardCommands();
-        this.discoverySound = cached.getDiscoverySound();
-        this.name = cached.getName();
-
-        this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
-        this.initDiscoveredBy();
-    }
+    private long createdAt;
 
     /**
      * Basic Area constructor
@@ -67,7 +40,7 @@ public class Area {
      * @param rewardCommands Reward command of area
      */
 
-    public Area(ProtectedRegion region, World world, String name, String description, int xp, Sound discoverySound, List<String> rewardCommands) {
+    public Area(ProtectedRegion region, World world, String name, String description, int xp, Sound discoverySound, List<String> rewardCommands, long createdAt) {
         this.region = region;
         this.world = world;
         this.name = name;
@@ -75,6 +48,7 @@ public class Area {
         this.xp = xp;
         this.discoverySound = discoverySound;
         this.rewardCommands = rewardCommands;
+        this.createdAt = createdAt;
 
         this.addData();
         this.initDiscoveredBy();
@@ -226,6 +200,7 @@ public class Area {
         configurationSection.set("xp", getXp());
         configurationSection.set("commands", getRewardCommands());
         configurationSection.set("sound", getDiscoverySound().toString());
+        configurationSection.set("created", getCreatedAt());
 
         DiscoverMain.getInstance().saveFiles();
     }
