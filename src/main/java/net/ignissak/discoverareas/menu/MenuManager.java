@@ -257,7 +257,7 @@ public class MenuManager {
     private Menu getAreaGUI(Area area) {
         MenuItem[] items = new MenuItem[9];
 
-        items[2] = new MenuItem(new ItemBuilder(Material.COMMAND_BLOCK, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aRewards"))
+        items[2] = new MenuItem(new ItemBuilder(Material.COMMAND, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aRewards"))
                 .setLore(ChatColor.translateAlternateColorCodes('&', "&7Commands: &f" + area.getRewardCommands().size()),
                         ChatColor.translateAlternateColorCodes('&', "&7XP reward: &f" + area.getXp()),
                         ChatColor.translateAlternateColorCodes('&', "&6Click to view commands."))
@@ -271,7 +271,7 @@ public class MenuManager {
                 .build(),
                 p -> {
                 }, false);
-        items[4] = new MenuItem(new ItemBuilder(Material.MUSIC_DISC_13, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aSound"))
+        items[4] = new MenuItem(new ItemBuilder(Material.RECORD_3, 1).setName(ChatColor.translateAlternateColorCodes('&', "&aSound"))
                 .setLore(ChatColor.translateAlternateColorCodes('&', "&7Discovery sound:"),
                         ChatColor.translateAlternateColorCodes('&', "&f" + area.getDiscoverySound().toString()),
                         ChatColor.translateAlternateColorCodes('&', "&7Click to listen."),

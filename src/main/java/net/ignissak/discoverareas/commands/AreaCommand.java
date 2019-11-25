@@ -543,7 +543,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
             case "add":
             case "create":
                 if (args.length == 2) {
-                    DiscoverMain.getRegionContainer().get(new BukkitWorld(player.getWorld())).getRegions().values().forEach(region -> {
+                    DiscoverMain.getRegionContainer().get(player.getWorld()).getRegions().values().forEach(region -> {
                         if (!DiscoverMain.getInstance().getCache().stream().anyMatch(area -> area.getRegion() == region))
                             out.add(region.getId());
                     });
