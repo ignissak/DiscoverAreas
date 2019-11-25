@@ -190,6 +190,7 @@ public final class DiscoverMain extends JavaPlugin {
             try {
                 worldGuard = WGBukkit.getPlugin();
                 regionContainer = worldGuard.getRegionContainer();
+                Bukkit.getConsoleSender().sendMessage(regionContainer.toString());
                 getSmartLogger().success("WorldGuard hooked!");
             } catch (Exception e) {
                 getSmartLogger().error("Could not hook WorldGuard!");
@@ -212,6 +213,7 @@ public final class DiscoverMain extends JavaPlugin {
                 ConfigurationSection config = cs.getConfigurationSection(key);
                 World w = Bukkit.getWorld(config.getString("world", "world"));
                 RegionManager rm = getRegionContainer().get(w);
+                Bukkit.getConsoleSender().sendMessage(rm.toString());
                 if (!rm.hasRegion(config.getString("region"))) {
                     getSmartLogger().error("Invalid region name '" + config.getString("region") + "' in world '" + config.getString("world") + "'.");
                     return;
