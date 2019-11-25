@@ -44,6 +44,12 @@ messages:
     messages:
       - "&aYou are entering @area"
 
+sounds:
+  info: "BLOCK_LADDER_HIT"
+  success: "ENTITY_EXPERIENCE_ORB_PICKUP"
+  error: "BLOCK_ANVIL_PLACE"
+  warning: "BLOCK_BEACON_POWER_SELECT"
+
 menus:
   user:
     enabled: true
@@ -66,8 +72,7 @@ gui:
         - "&fWorld: &7@world"
         - "&fDescription:"
         - "&7@description"
-        - "&7Click to see commands."
-        - "&7Shift-click to teleport."
+        - "&6Click to open."
     discovered:
       material: BOOK
       glowing: true

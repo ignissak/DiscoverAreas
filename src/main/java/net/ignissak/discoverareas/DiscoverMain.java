@@ -14,10 +14,7 @@ import net.ignissak.discoverareas.files.CustomFiles;
 import net.ignissak.discoverareas.menu.Menu;
 import net.ignissak.discoverareas.menu.MenuManager;
 import net.ignissak.discoverareas.objects.Area;
-import net.ignissak.discoverareas.utils.ItemBuilder;
-import net.ignissak.discoverareas.utils.Metrics;
-import net.ignissak.discoverareas.utils.SmartLogger;
-import net.ignissak.discoverareas.utils.UpdateChecker;
+import net.ignissak.discoverareas.utils.*;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
@@ -84,8 +81,9 @@ public final class DiscoverMain extends JavaPlugin {
         new UpdateChecker(this, resourceID).getVersion(version -> {
             DefaultArtifactVersion spigotVersion = new DefaultArtifactVersion(version);
             DefaultArtifactVersion pluginVersion = new DefaultArtifactVersion(getDescription().getVersion());
-            if (pluginVersion.compareTo(spigotVersion) > 0) {
-                if (getConfiguration().getBoolean("general.update-notify")) getSmartLogger().info("Your server is running latest version of DiscoverAreas (" + this.getDescription().getVersion() + ").");
+            if (pluginVersion.compareTo(spigotVersion) >= 0) {
+                if (getConfiguration().getBoolean("general.update-notify"))
+                    getSmartLogger().info("Your server is running latest version of DiscoverAreas (" + this.getDescription().getVersion() + ").");
             } else {
                 if (getConfiguration().getBoolean("general.update-notify")) {
                     getSmartLogger().info("---------------------------------");
@@ -97,6 +95,8 @@ public final class DiscoverMain extends JavaPlugin {
                 this.newVersion = version;
             }
         });
+
+        new VersionChecker(this, "https://raw.githubusercontent.com/ignissak/DiscoverAreas/master/unsupported_versions").checkVersion();
 
         cacheAreas();
 
@@ -164,7 +164,8 @@ public final class DiscoverMain extends JavaPlugin {
         return resourceID;
     }
 
-    @Nullable public static DiscoverPlayer getDiscoverPlayer(Player player) {
+    @Nullable
+    public static DiscoverPlayer getDiscoverPlayer(Player player) {
         if (players.containsKey(player)) return players.get(player);
         else return null;
     }
@@ -173,9 +174,13 @@ public final class DiscoverMain extends JavaPlugin {
         return Bukkit.getVersion().contains("1.12");
     }
 
-    private boolean isBeta() { return getDescription().getVersion().contains("B"); }
+    private boolean isBeta() {
+        return getDescription().getVersion().contains("B");
+    }
 
-    private boolean isSnapshot() { return getDescription().getVersion().contains("SNAPSHOT"); }
+    private boolean isSnapshot() {
+        return getDescription().getVersion().contains("SNAPSHOT");
+    }
 
     public void saveFiles() {
         customFiles.saveFiles();
@@ -260,23 +265,20 @@ public final class DiscoverMain extends JavaPlugin {
             this.previous = previous;
             this.next = next;
         } catch (Exception e) {
-            getSmartLogger().error("Could not initialize GUI items. It seems you are using old version of config - look at Spigot page to update your config.");
+            getSmartLogger().error("Could not initialize GUI items. Maybe you are using invalid material or you have old version of config.");
             e.printStackTrace();
         }
     }
 
     private void checkSoundsValidality() {
         getSmartLogger().info("Checking sounds...");
-        int count = 0;
         for (String s : getConfiguration().getConfigurationSection("sounds").getKeys(false)) {
             try {
                 Sound sound = Sound.valueOf(s);
-                count++;
             } catch (IllegalArgumentException e) {
                 getSmartLogger().error(s + " is not a valid sound!");
             }
         }
-        getSmartLogger().success(count + " sound were successfully loaded.");
     }
 
     public boolean existsArea(String name) {

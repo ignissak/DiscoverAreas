@@ -36,11 +36,11 @@ public class TextComponentBuilder {
         return this;
     }
 
-    public void send(Player player){
-       player.spigot().sendMessage(component);
+    public void send(Player player) {
+        player.spigot().sendMessage(component);
     }
 
-    public void send(DiscoverPlayer player){
+    public void send(DiscoverPlayer player) {
         player.getPlayer().spigot().sendMessage(component);
     }
 

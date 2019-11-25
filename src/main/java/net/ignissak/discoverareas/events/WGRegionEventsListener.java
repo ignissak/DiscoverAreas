@@ -110,7 +110,7 @@ public class WGRegionEventsListener implements Listener {
             return;
         }
         final List<Entity> passengers = event.getVehicle().getPassengers();
-        passengers.stream().filter(e -> e instanceof Player).forEach(player -> this.updateRegions((Player)player, MovementWay.RIDE, player.getLocation(), (Event)event));
+        passengers.stream().filter(e -> e instanceof Player).forEach(player -> this.updateRegions((Player) player, MovementWay.RIDE, player.getLocation(), (Event) event));
     }
 
     private void clearRegions(final Player player, final MovementWay movementway, final PlayerEvent event) {
@@ -130,8 +130,7 @@ public class WGRegionEventsListener implements Listener {
         Set<ProtectedRegion> regions;
         if (this.playerRegions.get(player) == null) {
             regions = new HashSet<>();
-        }
-        else {
+        } else {
             regions = new HashSet<>(this.playerRegions.get(player));
         }
         final Set<ProtectedRegion> oldRegions = new HashSet<>(regions);
@@ -163,8 +162,7 @@ public class WGRegionEventsListener implements Listener {
             if (!appRegions.contains(region)) {
                 if (rm.getRegion(region.getId()) != region) {
                     itr.remove();
-                }
-                else {
+                } else {
                     final RegionLeaveEvent e2 = new RegionLeaveEvent(region, player, movement, event);
                     this.plugin.getServer().getPluginManager().callEvent(e2);
                     if (e2.isCancelled()) {

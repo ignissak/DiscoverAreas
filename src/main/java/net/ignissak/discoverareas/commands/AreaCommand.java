@@ -172,6 +172,53 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                         ChatInfo.error(player, "Usage: /area setxp <name>");
                         break;
                     }
+                case "setsound":
+                    // /area setxp <name>
+                    if (args.length >= 2) {
+                        try {
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 1; i < args.length; i++) {
+                                sb.append(args[i]);
+                                if (i + 1 != args.length) {
+                                    sb.append(" ");
+                                }
+                            }
+
+                            String name = sb.toString();
+
+                            if (!DiscoverMain.getInstance().existsArea(name)) {
+                                ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
+                                break;
+                            }
+
+                            player.closeInventory();
+                            Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
+
+                            ChatInfo.info(player, "Insert new sound, type 'cancel' to cancel.");
+                            ChatInfo.info(player, "To view all available sounds go to Spigot documentation.");
+                            ChatInput chatInput = new ChatInput(player, ChatInputType.EDIT_EXP);
+                            chatInput.setChatInputCompleteMethod((p, m) -> {
+                                try {
+                                    Sound sound = Sound.valueOf(m);
+                                    area.setDiscoverySound(sound);
+                                    area.updateData();
+                                    ChatInfo.success(player, "Discovery sound of area '" + name + "' was set to " + sound + ".");
+                                    player.playSound(player.getLocation(), sound, 1, 0);
+                                } catch (Exception e) {
+                                    if (e instanceof IllegalArgumentException) {
+                                        ChatInfo.error(player, "Invalid sound, try again.");
+                                    } else ChatInfo.error(player, "There was an error while settings sound.");
+                                }
+                            });
+                            break;
+                        } catch (NumberFormatException e) {
+                            ChatInfo.error(player, "Could not format XP value. Example: /area setxp Northern Kingdom 100");
+                            break;
+                        }
+                    } else {
+                        ChatInfo.error(player, "Usage: /area setxp <name>");
+                        break;
+                    }
                 case "setdescription":
                 case "setdesc":
                     // /area setdesc <name>
@@ -360,7 +407,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
                                     Area area2 = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name2)).findFirst().get();
 
-                                    if (area2.getRewardCommands().isEmpty())  {
+                                    if (area2.getRewardCommands().isEmpty()) {
                                         ChatInfo.error(player, "This area does not have any commands defined.");
                                         break;
                                     }
@@ -408,7 +455,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
                                     Area area2 = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name2)).findFirst().get();
 
-                                    if (area2.getRewardCommands().isEmpty())  {
+                                    if (area2.getRewardCommands().isEmpty()) {
                                         ChatInfo.error(player, "This area does not have any commands defined.");
                                         break;
                                     }
@@ -434,7 +481,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                     });
                                     break;
                                 } catch (Exception e) {
-                                    if (e instanceof  NumberFormatException) {
+                                    if (e instanceof NumberFormatException) {
                                         ChatInfo.error(player, "Could not format ID value. Example: /area command edit 0 Northern Kingdom");
                                     } else ChatInfo.error(player, "Usage: /area command remove <area>");
                                     break;
@@ -496,8 +543,9 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
             case "add":
             case "create":
                 if (args.length == 2) {
-                    DiscoverMain.getRegionContainer().get(player.getWorld()).getRegions().values().forEach(region -> {
-                        if (!DiscoverMain.getInstance().getCache().stream().anyMatch(area -> area.getRegion() == region)) out.add(region.getId());
+                    DiscoverMain.getRegionContainer().get(new BukkitWorld(player.getWorld())).getRegions().values().forEach(region -> {
+                        if (!DiscoverMain.getInstance().getCache().stream().anyMatch(area -> area.getRegion() == region))
+                            out.add(region.getId());
                     });
                 }
                 break;
@@ -524,13 +572,18 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                     break;
                 } else if (args.length > 2) {
                     switch (args[1].toLowerCase()) {
+                        case "remove":
+                            if (args.length == 4)
+                                DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                            break;
                         case "add":
                         case "remove":
                         case "list":
                             DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
                             break;
                         case "edit":
-                            if (args.length == 4) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                            if (args.length == 4)
+                                DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
                             break;
                     }
                 }

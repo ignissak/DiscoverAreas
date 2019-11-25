@@ -100,9 +100,9 @@ public class DiscoverManager implements Listener {
         Player player = event.getPlayer();
         String message = event.getMessage();
 
-        if(ChatInput.isInInputMode(player)){
+        if (ChatInput.isInInputMode(player)) {
             ChatInput input = ChatInput.getInput(player);
-            if(ChatInput.isStopMessage(message)){
+            if (ChatInput.isStopMessage(message)) {
                 input.getExitMethod().run(player);
             } else {
                 input.getCompleteMethod().run(player, message);
