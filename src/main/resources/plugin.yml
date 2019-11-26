@@ -1,4 +1,5 @@
 name: DiscoverAreas
+version: "1.6.3-SNAPSHOT-1_12"
 load: POSTWORLD
 main: net.ignissak.discoverareas.DiscoverMain
 depend: [WorldGuard]
