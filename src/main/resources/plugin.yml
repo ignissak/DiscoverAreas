@@ -1,5 +1,5 @@
 name: DiscoverAreas
-version: 1.6.2-SNAPSHOT
+version: 1.6.3-SNAPSHOT
 load: POSTWORLD
 main: net.ignissak.discoverareas.DiscoverMain
 api-version: 1.13
