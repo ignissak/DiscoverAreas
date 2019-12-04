@@ -18,6 +18,8 @@ permissions:
   discoverareas.*:
     children:
       discoverareas.admin.areas: true
+      discoverareas.user: true
   discoverareas.user:
     default: false
     children:
+      discoverareas.user.areas: true
