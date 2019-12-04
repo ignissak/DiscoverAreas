@@ -22,10 +22,10 @@ public class Area {
     private World world;
     private String name, description;
     private int xp;
-    private List<String> rewardCommands;
+    private List<String> rewardCommands = new ArrayList<>();
     private Sound discoverySound;
     private ConfigurationSection configurationSection;
-    private List<UUID> discoveredBy;
+    private List<UUID> discoveredBy = new ArrayList<>();
     private long createdAt;
 
     /**

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class DiscoverPlayer {
 
     private Player player;
-    private HashMap<String, Long> discovered;
+    private HashMap<String, Long> discovered = new HashMap<>();
 
     DiscoverPlayer(Player player) {
         this.player = player;
