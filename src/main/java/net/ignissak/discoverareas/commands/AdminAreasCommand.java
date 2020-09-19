@@ -1,6 +1,6 @@
 package net.ignissak.discoverareas.commands;
 
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.utils.ChatInfo;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,27 +15,27 @@ public class AdminAreasCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (!player.hasPermission("discoverareas.admin.areas")) {
-            if (DiscoverMain.getConfiguration().getString("messages.no_permission") == "") return true;
-            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.no_permission"));
+            if (DiscoverAreasPlugin.getConfiguration().getString("messages.no_permission", "").equals("")) return true;
+            ChatInfo.error(player, DiscoverAreasPlugin.getConfiguration().getString("messages.no_permission"));
             return true;
         }
 
-        if (DiscoverMain.getInstance().getCache().size() <= 0) {
-            if (DiscoverMain.getConfiguration().getString("messages.no_areas") == "") return true;
-            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.no_areas"));
+        if (DiscoverAreasPlugin.getInstance().getCache().size() <= 0) {
+            if (DiscoverAreasPlugin.getConfiguration().getString("messages.no_areas", "").equals("")) return true;
+            ChatInfo.error(player, DiscoverAreasPlugin.getConfiguration().getString("messages.no_areas"));
             return true;
         }
 
-        if (!DiscoverMain.getConfiguration().getBoolean("menus.admin.enabled")) {
-            if (DiscoverMain.getConfiguration().getString("messages.disabled_menu") == "") return true;
-            ChatInfo.error(player, DiscoverMain.getConfiguration().getString("messages.disabled_menu"));
+        if (!DiscoverAreasPlugin.getConfiguration().getBoolean("menus.admin.enabled", true)) {
+            if (DiscoverAreasPlugin.getConfiguration().getString("messages.disabled_menu", "").equals("")) return true;
+            ChatInfo.error(player, DiscoverAreasPlugin.getConfiguration().getString("messages.disabled_menu"));
             return true;
         }
 
-        if (DiscoverMain.getInstance().getCache().size() <= 45) {
-            player.openInventory(DiscoverMain.getMenuManager().getMenu("adminMenu").getInventory());
+        if (DiscoverAreasPlugin.getInstance().getCache().size() <= 45) {
+            player.openInventory(DiscoverAreasPlugin.getMenuManager().getMenu("adminMenu").getInventory());
         } else {
-            player.openInventory(DiscoverMain.getMenuManager().getMenu("adminMenu1").getInventory());
+            player.openInventory(DiscoverAreasPlugin.getMenuManager().getMenu("adminMenu1").getInventory());
         }
 
         return true;

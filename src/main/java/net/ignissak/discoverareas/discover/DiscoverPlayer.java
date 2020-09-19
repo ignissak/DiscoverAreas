@@ -1,13 +1,12 @@
 package net.ignissak.discoverareas.discover;
 
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.objects.Area;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DiscoverPlayer {
 
@@ -17,9 +16,9 @@ public class DiscoverPlayer {
     DiscoverPlayer(Player player) {
         this.player = player;
         this.discovered = new HashMap<>();
-        if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty()) return;
+        if (DiscoverAreasPlugin.getData().getStringList(player.getUniqueId().toString()).isEmpty()) return;
         else {
-            for (String s : DiscoverMain.getData().getStringList(player.getUniqueId().toString())) {
+            for (String s : DiscoverAreasPlugin.getData().getStringList(player.getUniqueId().toString())) {
                 String[] split = s.split(":");
                 if (split.length != 2) {
                     // discovery time not defined
@@ -38,8 +37,8 @@ public class DiscoverPlayer {
         for (String key : map.keySet()) {
             list.add(key + ":" + map.get(key));
         }
-        DiscoverMain.getData().set(player.getUniqueId().toString(), list);
-        DiscoverMain.getInstance().saveFiles();
+        DiscoverAreasPlugin.getData().set(player.getUniqueId().toString(), list);
+        DiscoverAreasPlugin.getInstance().saveFiles();
     }
 
     /**
@@ -70,7 +69,7 @@ public class DiscoverPlayer {
 
     public List<Area> getNotDiscovered() {
         List<Area> out = new ArrayList<>();
-        for (Area a : DiscoverMain.getInstance().getCache()) {
+        for (Area a : DiscoverAreasPlugin.getInstance().getCache()) {
             if (getDiscovered().containsKey(a.getName())) continue;
             out.add(a);
         }
@@ -85,8 +84,8 @@ public class DiscoverPlayer {
 
     public void resetProgress() throws NullPointerException {
         this.discovered.clear();
-        DiscoverMain.getData().set(player.getUniqueId().toString(), null);
-        DiscoverMain.getInstance().saveFiles();
+        DiscoverAreasPlugin.getData().set(player.getUniqueId().toString(), null);
+        DiscoverAreasPlugin.getInstance().saveFiles();
     }
 
     /**
@@ -117,10 +116,10 @@ public class DiscoverPlayer {
 
     public void reload() {
         HashMap<String, Long> discovered = new HashMap<>();
-        if (DiscoverMain.getData().getStringList(player.getUniqueId().toString()).isEmpty())
+        if (DiscoverAreasPlugin.getData().getStringList(player.getUniqueId().toString()).isEmpty())
             this.discovered = discovered;
         else {
-            for (String s : DiscoverMain.getData().getStringList(player.getUniqueId().toString())) {
+            for (String s : DiscoverAreasPlugin.getData().getStringList(player.getUniqueId().toString())) {
                 String[] split = s.split(":");
                 if (split.length != 2) {
                     // discovery time not defined

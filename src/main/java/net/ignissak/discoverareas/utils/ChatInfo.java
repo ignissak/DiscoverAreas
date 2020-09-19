@@ -1,6 +1,6 @@
 package net.ignissak.discoverareas.utils;
 
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ public class ChatInfo {
      */
     public static void info(Player player, String message) {
         player.sendMessage(ChatColor.GRAY + "> " + ChatColor.GRAY + message);
-        player.playSound(player.getLocation(), Sound.valueOf(DiscoverMain.getConfiguration().getString("sounds.info", "BLOCK_LADDER_HIT")), 1, 0);
+        player.playSound(player.getLocation(), Sound.valueOf(DiscoverAreasPlugin.getConfiguration().getString("sounds.info", "BLOCK_LADDER_HIT")), .1F, 0);
     }
 
     /**
@@ -26,7 +26,7 @@ public class ChatInfo {
      */
     public static void success(Player player, String message) {
         player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + ">> " + ChatColor.GREEN + message);
-        player.playSound(player.getLocation(), Sound.valueOf(DiscoverMain.getConfiguration().getString("sounds.success", "ENTITY_EXPERIENCE_ORB_PICKUP")), 1, 0);
+        player.playSound(player.getLocation(), Sound.valueOf(DiscoverAreasPlugin.getConfiguration().getString("sounds.success", "ENTITY_VILLAGER_YES")), .1F, 0);
     }
 
     /**
@@ -37,7 +37,7 @@ public class ChatInfo {
      */
     public static void error(Player player, String message) {
         player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "[!!] " + ChatColor.RED + message);
-        player.playSound(player.getLocation(), Sound.valueOf(DiscoverMain.getConfiguration().getString("sounds.error", "BLOCK_ANVIL_PLACE")), 1, 0);
+        player.playSound(player.getLocation(), Sound.valueOf(DiscoverAreasPlugin.getConfiguration().getString("sounds.error", "ENTITY_VILLAGER_NO")), .1F, 0);
     }
 
     /**
@@ -48,7 +48,7 @@ public class ChatInfo {
      */
     public static void warning(Player player, String message) {
         player.sendMessage(ChatColor.GOLD + "" + ChatColor.BOLD + "[!] " + ChatColor.GOLD + message);
-        player.playSound(player.getLocation(), Sound.valueOf(DiscoverMain.getConfiguration().getString("sounds.warning", "BLOCK_BEACON_POWER_SELECT")), 1, 0);
+        player.playSound(player.getLocation(), Sound.valueOf(DiscoverAreasPlugin.getConfiguration().getString("sounds.warning", "ENTITY_VILLAGER_NO")), .1F, 0);
     }
 
     /**

@@ -1,7 +1,7 @@
 package net.ignissak.discoverareas.menu;
 
 import com.google.common.collect.Lists;
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.menu.items.MenuItem;
 import net.ignissak.discoverareas.objects.Area;
@@ -14,7 +14,6 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MenuManager {
@@ -24,10 +23,10 @@ public class MenuManager {
 
     public MenuManager() {
         this.menus = new HashMap<>();
-        Bukkit.getPluginManager().registerEvents(new MenuListener(), DiscoverMain.getInstance());
+        Bukkit.getPluginManager().registerEvents(new MenuListener(), DiscoverAreasPlugin.getInstance());
 
-        this.previous = DiscoverMain.getInstance().getPrevious().build();
-        this.next = DiscoverMain.getInstance().getNext().build();
+        this.previous = DiscoverAreasPlugin.getInstance().getPrevious().build();
+        this.next = DiscoverAreasPlugin.getInstance().getNext().build();
 
         updateMenus();
     }
@@ -56,8 +55,8 @@ public class MenuManager {
     }
 
     public void updateUserMenu(Player player) {
-        DiscoverPlayer discoverPlayer = DiscoverMain.getDiscoverPlayer(player);
-        List<Area> areaList = new ArrayList<>(DiscoverMain.getInstance().getCache());
+        DiscoverPlayer discoverPlayer = DiscoverAreasPlugin.getDiscoverPlayer(player);
+        List<Area> areaList = new ArrayList<>(DiscoverAreasPlugin.getInstance().getCache());
         areaList.sort(Comparator.comparing(a -> a.hasDiscovered(discoverPlayer)));
 
         if (areaList.size() <= 45) {
@@ -76,7 +75,7 @@ public class MenuManager {
                 i++;
                 iterator.remove();
 
-                Menu userMenu = new Menu(DiscoverMain.getConfiguration().getString("menus.user.titles.nopage"), items);
+                Menu userMenu = new Menu(DiscoverAreasPlugin.getConfiguration().getString("menus.user.titles.nopage"), items);
                 this.menus.put("userMenu_" + player.getName(), userMenu);
             }
         } else {
@@ -113,7 +112,7 @@ public class MenuManager {
                 }
 
 
-                Menu adminMenu = new Menu(DiscoverMain.getConfiguration().getString("menus.user.titles.page").replace("@page", String.valueOf(page)), items);
+                Menu adminMenu = new Menu(DiscoverAreasPlugin.getConfiguration().getString("menus.user.titles.page").replace("@page", String.valueOf(page)), items);
                 this.menus.put("userMenu_" + player.getName() + "_" + page, adminMenu);
 
                 page++;
@@ -123,10 +122,10 @@ public class MenuManager {
 
     public void updateMenus() {
         this.menus.clear();
-        if (DiscoverMain.getConfiguration().getBoolean("menus.user.enabled"))
+        if (DiscoverAreasPlugin.getConfiguration().getBoolean("menus.user.enabled"))
             Bukkit.getOnlinePlayers().forEach(this::updateUserMenu);
-        if (!DiscoverMain.getConfiguration().getBoolean("menus.admin.enabled")) return;
-        List<Area> areasList = new ArrayList<>(DiscoverMain.getInstance().getCache());
+        if (!DiscoverAreasPlugin.getConfiguration().getBoolean("menus.admin.enabled")) return;
+        List<Area> areasList = new ArrayList<>(DiscoverAreasPlugin.getInstance().getCache());
         areasList.sort(Comparator.comparing(Area::getName));
 
         if (areasList.size() <= 45) {
@@ -142,12 +141,12 @@ public class MenuManager {
                 iterator.remove();
             }
 
-            if (DiscoverMain.getConfiguration().getBoolean("gui.stats.enabled")) {
+            if (DiscoverAreasPlugin.getConfiguration().getBoolean("gui.stats.enabled")) {
                 items[49] = new MenuItem(getStatistics(), p -> {
                 }, false);
             }
 
-            Menu adminMenu = new Menu(DiscoverMain.getConfiguration().getString("menus.admin.titles.nopage"), items);
+            Menu adminMenu = new Menu(DiscoverAreasPlugin.getConfiguration().getString("menus.admin.titles.nopage"), items);
             this.menus.put("adminMenu", adminMenu);
         } else {
             //pages
@@ -163,7 +162,7 @@ public class MenuManager {
                     i++;
                 }
 
-                if (DiscoverMain.getConfiguration().getBoolean("gui.stats.enabled")) {
+                if (DiscoverAreasPlugin.getConfiguration().getBoolean("gui.stats.enabled")) {
                     items[49] = new MenuItem(getStatistics(), p -> {
                     }, false);
                 }
@@ -184,7 +183,7 @@ public class MenuManager {
                 }
 
 
-                Menu adminMenu = new Menu(DiscoverMain.getConfiguration().getString("menus.admin.titles.page").replace("@page", String.valueOf(page)), items);
+                Menu adminMenu = new Menu(DiscoverAreasPlugin.getConfiguration().getString("menus.admin.titles.page").replace("@page", String.valueOf(page)), items);
                 this.menus.put("adminMenu" + page, adminMenu);
 
                 page++;
@@ -193,19 +192,19 @@ public class MenuManager {
     }
 
     private ItemStack getStatistics() {
-        List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.stats.lore");
+        List<String> configLore = DiscoverAreasPlugin.getConfiguration().getStringList("gui.stats.lore");
         List<String> lore = new ArrayList<>();
         for (String s : configLore)
             lore.add(ChatColor.translateAlternateColorCodes('&', s
-                    .replace("@areas", String.valueOf(DiscoverMain.getInstance().getCache().size()))));
-        ItemBuilder stats = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.stats.material")), 1)
-                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.stats.displayname")))
+                    .replace("@areas", String.valueOf(DiscoverAreasPlugin.getInstance().getCache().size()))));
+        ItemBuilder stats = new ItemBuilder(Material.valueOf(DiscoverAreasPlugin.getConfiguration().getString("gui.stats.material")), 1)
+                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverAreasPlugin.getConfiguration().getString("gui.stats.displayname")))
                 .setLore(lore);
         return stats.build();
     }
 
     private ItemStack getAdmin(Area a) {
-        List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.admin.lore");
+        List<String> configLore = DiscoverAreasPlugin.getConfiguration().getStringList("gui.list.admin.lore");
         List<String> lore = new ArrayList<>();
         for (String s : configLore)
             lore.add(ChatColor.translateAlternateColorCodes('&', s
@@ -213,16 +212,16 @@ public class MenuManager {
                     .replace("@description", a.getDescription())
                     .replace("@world", a.getWorld().getName())
                     .replace("@region", a.getRegion().getId())));
-        ItemBuilder discovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.admin.material")), 1)
-                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.admin.displayname").replace("@area", a.getName())))
+        ItemBuilder discovered = new ItemBuilder(Material.valueOf(DiscoverAreasPlugin.getConfiguration().getString("gui.list.admin.material")), 1)
+                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverAreasPlugin.getConfiguration().getString("gui.list.admin.displayname").replace("@area", a.getName())))
                 .setLore(lore);
-        if (DiscoverMain.getConfiguration().getBoolean("gui.list.admin.glowing")) discovered.setGlowing();
+        if (DiscoverAreasPlugin.getConfiguration().getBoolean("gui.list.admin.glowing")) discovered.setGlowing();
 
         return discovered.build();
     }
 
     private ItemStack getDiscovered(Area a, DiscoverPlayer player) {
-        List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.discovered.lore");
+        List<String> configLore = DiscoverAreasPlugin.getConfiguration().getStringList("gui.list.discovered.lore");
         List<String> lore = new ArrayList<>();
         for (String s : configLore)
             lore.add(ChatColor.translateAlternateColorCodes('&', s
@@ -231,16 +230,16 @@ public class MenuManager {
                     .replace("@world", a.getWorld().getName())
                     .replace("@date", DateUtils.formatDate(player.getDiscovered().get(a.getName())))
                     .replace("@region", a.getRegion().getId())));
-        ItemBuilder discovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.discovered.material")), 1)
-                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.discovered.displayname").replace("@area", a.getName())))
+        ItemBuilder discovered = new ItemBuilder(Material.valueOf(DiscoverAreasPlugin.getConfiguration().getString("gui.list.discovered.material")), 1)
+                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverAreasPlugin.getConfiguration().getString("gui.list.discovered.displayname").replace("@area", a.getName())))
                 .setLore(lore);
-        if (DiscoverMain.getConfiguration().getBoolean("gui.list.discovered.glowing")) discovered.setGlowing();
+        if (DiscoverAreasPlugin.getConfiguration().getBoolean("gui.list.discovered.glowing")) discovered.setGlowing();
 
         return discovered.build();
     }
 
     private ItemStack getUndiscovered(Area a) {
-        List<String> configLore = DiscoverMain.getConfiguration().getStringList("gui.list.notdiscovered.lore");
+        List<String> configLore = DiscoverAreasPlugin.getConfiguration().getStringList("gui.list.notdiscovered.lore");
         List<String> lore = new ArrayList<>();
         for (String s : configLore)
             lore.add(ChatColor.translateAlternateColorCodes('&', s
@@ -248,10 +247,10 @@ public class MenuManager {
                     .replace("@description", a.getDescription())
                     .replace("@world", a.getWorld().getName())
                     .replace("@region", a.getRegion().getId())));
-        ItemBuilder undiscovered = new ItemBuilder(Material.valueOf(DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.material")), 1)
-                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("gui.list.notdiscovered.displayname").replace("@area", a.getName())))
+        ItemBuilder undiscovered = new ItemBuilder(Material.valueOf(DiscoverAreasPlugin.getConfiguration().getString("gui.list.notdiscovered.material")), 1)
+                .setName(ChatColor.translateAlternateColorCodes('&', DiscoverAreasPlugin.getConfiguration().getString("gui.list.notdiscovered.displayname").replace("@area", a.getName())))
                 .setLore(lore);
-        if (DiscoverMain.getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
+        if (DiscoverAreasPlugin.getConfiguration().getBoolean("gui.list.notdiscovered.glowing")) undiscovered.setGlowing();
 
         return undiscovered.build();
     }

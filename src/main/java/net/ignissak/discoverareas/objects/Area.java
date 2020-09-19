@@ -2,7 +2,7 @@ package net.ignissak.discoverareas.objects;
 
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.utils.ChatInfo;
 import net.ignissak.discoverareas.utils.TextComponentBuilder;
@@ -22,7 +22,7 @@ public class Area {
     private World world;
     private String name, description;
     private int xp;
-    private List<String> rewardCommands = new ArrayList<>();
+    private List<String> rewardCommands;
     private Sound discoverySound;
     private ConfigurationSection configurationSection;
     private List<UUID> discoveredBy = new ArrayList<>();
@@ -191,9 +191,9 @@ public class Area {
     }
 
     private void addData() {
-        DiscoverMain.getConfiguration().createSection("areas." + this.getName());
-        DiscoverMain.getInstance().saveFiles();
-        this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
+        DiscoverAreasPlugin.getConfiguration().createSection("areas." + this.getName());
+        DiscoverAreasPlugin.getInstance().saveFiles();
+        this.configurationSection = DiscoverAreasPlugin.getConfiguration().getConfigurationSection("areas." + getName());
 
         configurationSection.set("world", getWorld().getName());
         configurationSection.set("region", getRegion().getId());
@@ -203,7 +203,7 @@ public class Area {
         configurationSection.set("sound", getDiscoverySound().toString());
         configurationSection.set("created", getCreatedAt());
 
-        DiscoverMain.getInstance().saveFiles();
+        DiscoverAreasPlugin.getInstance().saveFiles();
     }
 
     /**
@@ -211,7 +211,7 @@ public class Area {
      */
 
     public void updateData() {
-        this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
+        this.configurationSection = DiscoverAreasPlugin.getConfiguration().getConfigurationSection("areas." + getName());
 
         configurationSection.set("world", getWorld().getName());
         configurationSection.set("region", getRegion().getId());
@@ -220,8 +220,8 @@ public class Area {
         configurationSection.set("commands", getRewardCommands());
         configurationSection.set("sound", getDiscoverySound().toString());
 
-        DiscoverMain.getInstance().saveFiles();
-        DiscoverMain.getMenuManager().updateMenus();
+        DiscoverAreasPlugin.getInstance().saveFiles();
+        DiscoverAreasPlugin.getMenuManager().updateMenus();
     }
 
     /**
@@ -229,7 +229,7 @@ public class Area {
      */
 
     public void addToCache() {
-        if (!DiscoverMain.getInstance().getCache().contains(this)) DiscoverMain.getInstance().getCache().add(this);
+        if (!DiscoverAreasPlugin.getInstance().getCache().contains(this)) DiscoverAreasPlugin.getInstance().getCache().add(this);
     }
 
     /**
@@ -241,17 +241,17 @@ public class Area {
 
     public void discover(DiscoverPlayer discoverPlayer) {
         discoverPlayer.addDiscoveredArea(this);
-        if (DiscoverMain.getConfiguration().getBoolean("title.on_discover.enabled")) {
-            String title = ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("title.on_discover.title").replace("@area", this.getName())).replace("@description", this.getDescription());
-            String subtitle = ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("title.on_discover.subtitle").replace("@area", this.getName())).replace("@description", this.getDescription());
-            int fadein = DiscoverMain.getConfiguration().getInt("title.on_discover.fadein") * 20;
-            int stay = DiscoverMain.getConfiguration().getInt("title.on_discover.stay") * 20;
-            int fadeout = DiscoverMain.getConfiguration().getInt("title.on_discover.fadeout") * 20;
+        if (DiscoverAreasPlugin.getConfiguration().getBoolean("title.on_discover.enabled")) {
+            String title = ChatColor.translateAlternateColorCodes('&', DiscoverAreasPlugin.getConfiguration().getString("title.on_discover.title").replace("@area", this.getName())).replace("@description", this.getDescription());
+            String subtitle = ChatColor.translateAlternateColorCodes('&', DiscoverAreasPlugin.getConfiguration().getString("title.on_discover.subtitle").replace("@area", this.getName())).replace("@description", this.getDescription());
+            int fadein = DiscoverAreasPlugin.getConfiguration().getInt("title.on_discover.fadein") * 20;
+            int stay = DiscoverAreasPlugin.getConfiguration().getInt("title.on_discover.stay") * 20;
+            int fadeout = DiscoverAreasPlugin.getConfiguration().getInt("title.on_discover.fadeout") * 20;
             new Title(title, subtitle, fadein, stay, fadeout).send(discoverPlayer.getPlayer());
         }
 
-        if (DiscoverMain.getConfiguration().getBoolean("messages.on_discover.enabled")) {
-            for (String s : DiscoverMain.getConfiguration().getStringList("messages.on_discover.messages")) {
+        if (DiscoverAreasPlugin.getConfiguration().getBoolean("messages.on_discover.enabled")) {
+            for (String s : DiscoverAreasPlugin.getConfiguration().getStringList("messages.on_discover.messages")) {
                 discoverPlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', s.replace("@area", this.getName()).replace("@description", this.getDescription())));
             }
         }
@@ -267,7 +267,7 @@ public class Area {
             discoverPlayer.getPlayer().giveExp(configurationSection.getInt("xp"));
         }
 
-        DiscoverMain.getMenuManager().updateMenus();
+        DiscoverAreasPlugin.getMenuManager().updateMenus();
     }
 
     /**
@@ -275,16 +275,16 @@ public class Area {
      */
 
     public void reload() {
-        this.configurationSection = DiscoverMain.getConfiguration().getConfigurationSection("areas." + getName());
+        this.configurationSection = DiscoverAreasPlugin.getConfiguration().getConfigurationSection("areas." + getName());
 
         this.world = Bukkit.getWorld(configurationSection.getString("world"));
-        this.region = DiscoverMain.getRegionContainer().get(new BukkitWorld(world)).getRegion(getConfigurationSection().getString("region"));
+        this.region = DiscoverAreasPlugin.getRegionContainer().get(new BukkitWorld(world)).getRegion(getConfigurationSection().getString("region"));
         this.description = configurationSection.getString("description");
         this.xp = configurationSection.getInt("xp");
         this.rewardCommands = configurationSection.getStringList("commands");
         this.discoverySound = Sound.valueOf(getConfigurationSection().getString("sound"));
 
-        DiscoverMain.getMenuManager().updateMenus();
+        DiscoverAreasPlugin.getMenuManager().updateMenus();
     }
 
     /**
@@ -292,21 +292,21 @@ public class Area {
      */
 
     public void delete() {
-        if (DiscoverMain.getInstance().getCache().contains(this)) DiscoverMain.getInstance().getCache().remove(this);
+        if (DiscoverAreasPlugin.getInstance().getCache().contains(this)) DiscoverAreasPlugin.getInstance().getCache().remove(this);
 
-        DiscoverMain.getData().getKeys(false).forEach(uuid -> {
-            List<String> discovered = DiscoverMain.getData().getStringList(uuid);
+        DiscoverAreasPlugin.getData().getKeys(false).forEach(uuid -> {
+            List<String> discovered = DiscoverAreasPlugin.getData().getStringList(uuid);
             discovered.remove(this.getName());
             if (discovered.isEmpty()) {
-                DiscoverMain.getData().set(uuid, null);
+                DiscoverAreasPlugin.getData().set(uuid, null);
             } else {
-                DiscoverMain.getData().set(uuid, discovered);
+                DiscoverAreasPlugin.getData().set(uuid, discovered);
             }
         });
 
-        DiscoverMain.getConfiguration().set("areas." + getName(), null);
-        DiscoverMain.getInstance().saveFiles();
-        DiscoverMain.getMenuManager().updateMenus();
+        DiscoverAreasPlugin.getConfiguration().set("areas." + getName(), null);
+        DiscoverAreasPlugin.getInstance().saveFiles();
+        DiscoverAreasPlugin.getMenuManager().updateMenus();
     }
 
     /**
@@ -364,8 +364,8 @@ public class Area {
 
     private void initDiscoveredBy() {
         List<UUID> out = new ArrayList<>();
-        DiscoverMain.getData().getKeys(false).forEach(uuidString -> {
-            List<String> discovered = DiscoverMain.getData().getStringList(uuidString);
+        DiscoverAreasPlugin.getData().getKeys(false).forEach(uuidString -> {
+            List<String> discovered = DiscoverAreasPlugin.getData().getStringList(uuidString);
             if (discovered.contains(getName())) out.add(UUID.fromString(uuidString));
         });
         this.discoveredBy = out;

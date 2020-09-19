@@ -1,7 +1,7 @@
 package net.ignissak.discoverareas.discover;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.events.AreaEnterEvent;
 import net.ignissak.discoverareas.events.AreaLeaveEvent;
 import net.ignissak.discoverareas.events.PlayerDiscoverEvent;
@@ -27,31 +27,31 @@ public class DiscoverManager implements Listener {
         Player player = event.getPlayer();
         DiscoverPlayer discoverPlayer = new DiscoverPlayer(player);
 
-        DiscoverMain.getInstance().getPlayers().put(player, discoverPlayer);
+        DiscoverAreasPlugin.getInstance().getPlayers().put(player, discoverPlayer);
 
         if (player.hasPermission("discoverareas.admin")) {
-            if (DiscoverMain.getInstance().isUpdateAvailable() && DiscoverMain.getConfiguration().getBoolean("general.update-notify")) {
-                Bukkit.getScheduler().runTaskLater(DiscoverMain.getInstance(), () -> {
-                    player.sendMessage(ChatColor.RED + "Your servers is running out-of-date version of DiscoverAreas (" + DiscoverMain.getInstance().getDescription().getVersion() + ").");
-                    player.sendMessage(ChatColor.RED + "Download new version (" + DiscoverMain.getInstance().getNewVersion() + ") on spigot page: ");
-                    player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-12." + DiscoverMain.getInstance().getResourceID() + "/");
+            if (DiscoverAreasPlugin.getInstance().isUpdateAvailable() && DiscoverAreasPlugin.getConfiguration().getBoolean("general.update-notify")) {
+                Bukkit.getScheduler().runTaskLater(DiscoverAreasPlugin.getInstance(), () -> {
+                    player.sendMessage(ChatColor.RED + "Your servers is running out-of-date version of DiscoverAreas (" + DiscoverAreasPlugin.getInstance().getDescription().getVersion() + ").");
+                    player.sendMessage(ChatColor.RED + "Download new version (" + DiscoverAreasPlugin.getInstance().getNewVersion() + ") on spigot page: ");
+                    player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-12." + DiscoverAreasPlugin.getInstance().getResourceID() + "/");
                     player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, 1, 1);
                 }, 40);
             }
         }
 
-        DiscoverMain.getMenuManager().updateMenus();
+        DiscoverAreasPlugin.getMenuManager().updateMenus();
     }
 
     @EventHandler
     public void onRegionEnter(RegionEnterEvent event) {
         Player player = event.getPlayer();
-        DiscoverPlayer discoverPlayer = DiscoverMain.getDiscoverPlayer(player);
+        DiscoverPlayer discoverPlayer = DiscoverAreasPlugin.getDiscoverPlayer(player);
         if (discoverPlayer == null) return;
 
         ProtectedRegion region = event.getRegion();
-        if (DiscoverMain.getInstance().getCache().stream().noneMatch(area -> area.getRegion() == region)) return;
-        Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getRegion() == region).findFirst().get();
+        if (DiscoverAreasPlugin.getInstance().getCache().stream().noneMatch(area -> area.getRegion() == region)) return;
+        Area area = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getRegion() == region).findFirst().get();
 
         if (!discoverPlayer.hasDiscovered(area.getName())) {
             PlayerDiscoverEvent playerDiscoverEvent = new PlayerDiscoverEvent(player, area);
@@ -67,12 +67,12 @@ public class DiscoverManager implements Listener {
     @EventHandler
     public void onRegionLeave(RegionLeaveEvent event) {
         Player player = event.getPlayer();
-        DiscoverPlayer discoverPlayer = DiscoverMain.getDiscoverPlayer(player);
+        DiscoverPlayer discoverPlayer = DiscoverAreasPlugin.getDiscoverPlayer(player);
         if (discoverPlayer == null) return;
 
         ProtectedRegion region = event.getRegion();
-        if (DiscoverMain.getInstance().getCache().stream().noneMatch(area -> area.getRegion() == region)) return;
-        Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getRegion() == region).findFirst().get();
+        if (DiscoverAreasPlugin.getInstance().getCache().stream().noneMatch(area -> area.getRegion() == region)) return;
+        Area area = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getRegion() == region).findFirst().get();
 
         Bukkit.getPluginManager().callEvent(new AreaLeaveEvent(discoverPlayer, area));
     }
@@ -83,16 +83,16 @@ public class DiscoverManager implements Listener {
         DiscoverPlayer discoverPlayer = event.getPlayer();
 
         if (discoverPlayer.hasDiscovered(area.getName())) {
-            if (DiscoverMain.getConfiguration().getBoolean("title.on_enter.enabled")) {
-                String title = ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("title.on_enter.title").replace("@area", area.getName())).replace("@description", area.getDescription());
-                String subtitle = ChatColor.translateAlternateColorCodes('&', DiscoverMain.getConfiguration().getString("title.on_enter.subtitle").replace("@area", area.getName())).replace("@description", area.getDescription());
-                int fadein = DiscoverMain.getConfiguration().getInt("title.on_enter.fadein") * 20;
-                int stay = DiscoverMain.getConfiguration().getInt("title.on_enter.stay") * 20;
-                int fadeout = DiscoverMain.getConfiguration().getInt("title.on_enter.fadeout") * 20;
+            if (DiscoverAreasPlugin.getConfiguration().getBoolean("title.on_enter.enabled")) {
+                String title = ChatColor.translateAlternateColorCodes('&', DiscoverAreasPlugin.getConfiguration().getString("title.on_enter.title").replace("@area", area.getName())).replace("@description", area.getDescription());
+                String subtitle = ChatColor.translateAlternateColorCodes('&', DiscoverAreasPlugin.getConfiguration().getString("title.on_enter.subtitle").replace("@area", area.getName())).replace("@description", area.getDescription());
+                int fadein = DiscoverAreasPlugin.getConfiguration().getInt("title.on_enter.fadein") * 20;
+                int stay = DiscoverAreasPlugin.getConfiguration().getInt("title.on_enter.stay") * 20;
+                int fadeout = DiscoverAreasPlugin.getConfiguration().getInt("title.on_enter.fadeout") * 20;
                 new Title(title, subtitle, fadein, stay, fadeout).send(discoverPlayer.getPlayer());
             }
-            if (DiscoverMain.getConfiguration().getBoolean("messages.on_enter.enabled")) {
-                for (String s : DiscoverMain.getConfiguration().getStringList("messages.on_enter.messages")) {
+            if (DiscoverAreasPlugin.getConfiguration().getBoolean("messages.on_enter.enabled")) {
+                for (String s : DiscoverAreasPlugin.getConfiguration().getStringList("messages.on_enter.messages")) {
                     discoverPlayer.getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', s.replace("@area", area.getName()).replace("@description", area.getDescription())));
                 }
             }

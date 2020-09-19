@@ -13,7 +13,7 @@ import java.util.*;
 public class ItemBuilder {
 
     protected ItemStack is;
-    private HashMap<String, String> placeholders = new HashMap<String, String>();
+    private HashMap<String, String> placeholders = new HashMap<>();
 
     /**
      * Create a new ItemBuilder over an existing itemstack.

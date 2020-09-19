@@ -1,6 +1,6 @@
 package net.ignissak.discoverareas.utils;
 
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Consumer;
@@ -27,7 +27,7 @@ public class UpdateChecker {
                     consumer.accept(scanner.next());
                 }
             } catch (IOException exception) {
-                DiscoverMain.getSmartLogger().error("Cannot look for updates: " + exception.getMessage());
+                DiscoverAreasPlugin.getSmartLogger().error("Cannot look for updates: " + exception.getMessage());
             }
         });
     }

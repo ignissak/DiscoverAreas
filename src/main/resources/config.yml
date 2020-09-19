@@ -63,9 +63,9 @@ messages:
 
 sounds:
   info: "BLOCK_LADDER_HIT"
-  success: "ENTITY_EXPERIENCE_ORB_PICKUP"
-  error: "BLOCK_ANVIL_PLACE"
-  warning: "BLOCK_BEACON_POWER_SELECT"
+  success: "ENTITY_VILLAGER_YES"
+  error: "ENTITY_VILLAGER_NO"
+  warning: "ENTITY_VILLAGER_NO"
 
 menus:
   user:

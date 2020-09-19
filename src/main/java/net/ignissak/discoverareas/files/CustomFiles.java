@@ -1,16 +1,12 @@
 package net.ignissak.discoverareas.files;
 
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class CustomFiles {
 
@@ -22,10 +18,10 @@ public class CustomFiles {
     }
 
     private void createFiles() {
-        configFile = new File(DiscoverMain.getInstance().getDataFolder(), "config.yml");
+        configFile = new File(DiscoverAreasPlugin.getInstance().getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             configFile.getParentFile().mkdirs();
-            DiscoverMain.getInstance().saveResource("config.yml", false);
+            DiscoverAreasPlugin.getInstance().saveResource("config.yml", false);
         }
 
         configConfig = new YamlConfiguration();
@@ -35,10 +31,10 @@ public class CustomFiles {
             e.printStackTrace();
         }
 
-        dataFile = new File(DiscoverMain.getInstance().getDataFolder(), "data.yml");
+        dataFile = new File(DiscoverAreasPlugin.getInstance().getDataFolder(), "data.yml");
         if (!dataFile.exists()) {
             dataFile.getParentFile().mkdirs();
-            DiscoverMain.getInstance().saveResource("data.yml", false);
+            DiscoverAreasPlugin.getInstance().saveResource("data.yml", false);
         }
 
         dataConfig = new YamlConfiguration();
@@ -54,7 +50,7 @@ public class CustomFiles {
             this.getConfigConfig().save(configFile);
             this.getDataConfig().save(dataFile);
         } catch (IOException e) {
-            DiscoverMain.getSmartLogger().severe("Could not save files.");
+            DiscoverAreasPlugin.getSmartLogger().severe("Could not save files.");
             e.printStackTrace();
         }
     }

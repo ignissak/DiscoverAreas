@@ -7,7 +7,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.events.worldguard.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,20 +24,20 @@ import java.util.*;
 
 public class WGRegionEventsListener implements Listener {
 
-    private DiscoverMain plugin;
+    private DiscoverAreasPlugin plugin;
     private Map<Player, Set<ProtectedRegion>> playerRegions;
     private final RegionContainer container;
     private static boolean initialized;
 
     public static void initialize() {
         if (!WGRegionEventsListener.initialized) {
-            new WGRegionEventsListener(DiscoverMain.getInstance());
+            new WGRegionEventsListener(DiscoverAreasPlugin.getInstance());
             return;
         }
         throw new UnsupportedOperationException("You are not allowed to instantiate this class!");
     }
 
-    private WGRegionEventsListener(final DiscoverMain plugin) {
+    private WGRegionEventsListener(final DiscoverAreasPlugin plugin) {
         this.plugin = plugin;
         Bukkit.getPluginManager().registerEvents(this, plugin);
         this.container = WorldGuard.getInstance().getPlatform().getRegionContainer();

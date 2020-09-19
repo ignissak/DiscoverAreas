@@ -1,10 +1,9 @@
 package net.ignissak.discoverareas.commands;
 
-import com.google.common.collect.Lists;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.objects.Area;
 import net.ignissak.discoverareas.utils.ChatInfo;
@@ -36,7 +35,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
         Player player = (Player) sender;
 
         if (!player.hasPermission("discoverareas.admin")) {
-            player.sendMessage(ChatColor.GOLD + "This server runs DiscoverAreas version " + DiscoverMain.getInstance().getDescription().getVersion() + ".");
+            player.sendMessage(ChatColor.GOLD + "This server runs DiscoverAreas version " + DiscoverAreasPlugin.getInstance().getDescription().getVersion() + ".");
             return true;
         } else {
 
@@ -63,17 +62,17 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             }
                             String name = sb.toString();
 
-                            if (DiscoverMain.getInstance().existsArea(name)) {
+                            if (DiscoverAreasPlugin.getInstance().existsArea(name)) {
                                 ChatInfo.error(player, "Area with name '" + name + "' already exists.");
                                 break;
                             }
 
-                            if (DiscoverMain.getInstance().isRegionUsed(regionName)) {
+                            if (DiscoverAreasPlugin.getInstance().isRegionUsed(regionName)) {
                                 ChatInfo.error(player, "Region with name '" + regionName + "' is already associated with other area.");
                                 break;
                             }
 
-                            RegionManager rm = DiscoverMain.getRegionContainer().get(new BukkitWorld(w));
+                            RegionManager rm = DiscoverAreasPlugin.getRegionContainer().get(new BukkitWorld(w));
                             if (!rm.hasRegion(regionName)) {
                                 ChatInfo.error(player, "Could not find region '" + regionName + "' in this world.");
                                 break;
@@ -83,7 +82,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             Area area = new Area(region, w, name, "Default description - change in config.", 0, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, new ArrayList<>(), System.currentTimeMillis());
 
                             area.addToCache();
-                            DiscoverMain.getMenuManager().updateMenus();
+                            DiscoverAreasPlugin.getMenuManager().updateMenus();
 
                             ChatInfo.success(player, "Successfully created area '" + name + "'.");
                             ChatInfo.info(player, "To change settings, edit config.yml file.");
@@ -111,12 +110,12 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             }
                             String name = sb.toString();
 
-                            if (!DiscoverMain.getInstance().existsArea(name)) {
+                            if (!DiscoverAreasPlugin.getInstance().existsArea(name)) {
                                 ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
                                 break;
                             }
 
-                            Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
+                            Area area = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
                             area.delete();
 
                             ChatInfo.success(player, "Area with name '" + name + "' was successfully deleted.");
@@ -145,12 +144,12 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
                             String name = sb.toString();
 
-                            if (!DiscoverMain.getInstance().existsArea(name)) {
+                            if (!DiscoverAreasPlugin.getInstance().existsArea(name)) {
                                 ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
                                 break;
                             }
 
-                            Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
+                            Area area = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
 
                             ChatInfo.info(player, "Insert new reward XP value, type 'cancel' to cancel.");
                             ChatInput chatInput = new ChatInput(player, ChatInputType.EDIT_EXP);
@@ -189,13 +188,13 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
                             String name = sb.toString();
 
-                            if (!DiscoverMain.getInstance().existsArea(name)) {
+                            if (!DiscoverAreasPlugin.getInstance().existsArea(name)) {
                                 ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
                                 break;
                             }
 
                             player.closeInventory();
-                            Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
+                            Area area = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
 
                             ChatInfo.info(player, "Insert new sound, type 'cancel' to cancel.");
                             ChatInfo.info(player, "To view all available sounds go to Spigot documentation.");
@@ -237,12 +236,12 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
                             String name = sb.toString();
 
-                            if (!DiscoverMain.getInstance().existsArea(name)) {
+                            if (!DiscoverAreasPlugin.getInstance().existsArea(name)) {
                                 ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
                                 break;
                             }
 
-                            Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
+                            Area area = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
 
                             ChatInfo.info(player, "Enter new description. Type 'cancel' if you want to cancel.");
                             ChatInput chatInput = new ChatInput(player, ChatInputType.EDIT_DESCRIPTION);
@@ -269,15 +268,15 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                     // /area reset [player]
                     if (args.length <= 1) {
                         try {
-                            DiscoverPlayer discoverPlayer = DiscoverMain.getDiscoverPlayer(player);
+                            DiscoverPlayer discoverPlayer = DiscoverAreasPlugin.getDiscoverPlayer(player);
 
-                            if (!DiscoverMain.getInstance().isInData(discoverPlayer.getPlayer().getUniqueId().toString())) {
+                            if (!DiscoverAreasPlugin.getInstance().isInData(discoverPlayer.getPlayer().getUniqueId().toString())) {
                                 ChatInfo.error(player, "There is no data associated to your UUID.");
                                 break;
                             }
 
                             discoverPlayer.resetProgress();
-                            DiscoverMain.getMenuManager().updateMenus();
+                            DiscoverAreasPlugin.getMenuManager().updateMenus();
 
                             ChatInfo.success(player, "Your progress was reset.");
                             break;
@@ -291,19 +290,19 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                         try {
                             if (target.matches("/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/")) {
                                 //uuid
-                                if (!DiscoverMain.getInstance().isInData(target)) {
+                                if (!DiscoverAreasPlugin.getInstance().isInData(target)) {
                                     ChatInfo.error(player, "There is no data associated to this UUID.");
                                     break;
                                 }
 
                                 if (Bukkit.getPlayer(UUID.fromString(target)) != null) {
-                                    DiscoverPlayer targetPlayer = DiscoverMain.getDiscoverPlayer(Bukkit.getPlayer(UUID.fromString(target)));
+                                    DiscoverPlayer targetPlayer = DiscoverAreasPlugin.getDiscoverPlayer(Bukkit.getPlayer(UUID.fromString(target)));
                                     targetPlayer.resetProgress();
                                 } else {
-                                    DiscoverMain.getData().set(target, null);
-                                    DiscoverMain.getInstance().saveFiles();
+                                    DiscoverAreasPlugin.getData().set(target, null);
+                                    DiscoverAreasPlugin.getInstance().saveFiles();
                                 }
-                                DiscoverMain.getMenuManager().updateMenus();
+                                DiscoverAreasPlugin.getMenuManager().updateMenus();
 
                                 ChatInfo.success(player, "Data were successfully reset.");
                                 break;
@@ -313,15 +312,15 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                     break;
                                 }
 
-                                DiscoverPlayer targetPlayer = DiscoverMain.getDiscoverPlayer(Bukkit.getPlayer(target));
+                                DiscoverPlayer targetPlayer = DiscoverAreasPlugin.getDiscoverPlayer(Bukkit.getPlayer(target));
 
-                                if (!DiscoverMain.getInstance().isInData(targetPlayer.getPlayer().getUniqueId().toString())) {
+                                if (!DiscoverAreasPlugin.getInstance().isInData(targetPlayer.getPlayer().getUniqueId().toString())) {
                                     ChatInfo.error(player, "There is no data associated to this player's UUID.");
                                     break;
                                 }
 
                                 targetPlayer.resetProgress();
-                                DiscoverMain.getMenuManager().updateMenus();
+                                DiscoverAreasPlugin.getMenuManager().updateMenus();
 
                                 ChatInfo.success(player, "Data of player '" + targetPlayer.getPlayer().getName() + "' were successfully reset.");
                                 break;
@@ -346,12 +345,12 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                 }
                                 String name1 = sb1.toString();
 
-                                if (!DiscoverMain.getInstance().existsArea(name1)) {
+                                if (!DiscoverAreasPlugin.getInstance().existsArea(name1)) {
                                     ChatInfo.error(player, "Area with name '" + name1 + "' does not exist.");
                                     break;
                                 }
 
-                                Area area1 = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name1)).findFirst().get();
+                                Area area1 = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getName().equals(name1)).findFirst().get();
 
                                 try {
                                     area1.sendCommands(player);
@@ -371,12 +370,12 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                 }
                                 String name = sb.toString();
 
-                                if (!DiscoverMain.getInstance().existsArea(name)) {
+                                if (!DiscoverAreasPlugin.getInstance().existsArea(name)) {
                                     ChatInfo.error(player, "Area with name '" + name + "' does not exist.");
                                     break;
                                 }
 
-                                Area area = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
+                                Area area = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getName().equals(name)).findFirst().get();
 
                                 ChatInfo.info(player, "Enter new command you would like to add, to cancel type 'cancel'.");
                                 ChatInfo.info(player, "Use @player placeholder for player's nick.");
@@ -404,12 +403,12 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                     String name2 = sb2.toString();
                                     int id = Integer.parseInt(args[2]);
 
-                                    if (!DiscoverMain.getInstance().existsArea(name2)) {
+                                    if (!DiscoverAreasPlugin.getInstance().existsArea(name2)) {
                                         ChatInfo.error(player, "Area with name '" + name2 + "' does not exist.");
                                         break;
                                     }
 
-                                    Area area2 = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name2)).findFirst().get();
+                                    Area area2 = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getName().equals(name2)).findFirst().get();
 
                                     if (area2.getRewardCommands().isEmpty()) {
                                         ChatInfo.error(player, "This area does not have any commands defined.");
@@ -446,12 +445,12 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                     String name2 = sb2.toString();
                                     int id = Integer.parseInt(args[2]);
 
-                                    if (!DiscoverMain.getInstance().existsArea(name2)) {
+                                    if (!DiscoverAreasPlugin.getInstance().existsArea(name2)) {
                                         ChatInfo.error(player, "Area with name '" + name2 + "' does not exist.");
                                         break;
                                     }
 
-                                    Area area2 = DiscoverMain.getInstance().getCache().stream().filter(a -> a.getName().equals(name2)).findFirst().get();
+                                    Area area2 = DiscoverAreasPlugin.getInstance().getCache().stream().filter(a -> a.getName().equals(name2)).findFirst().get();
 
                                     if (area2.getRewardCommands().isEmpty()) {
                                         ChatInfo.error(player, "This area does not have any commands defined.");
@@ -497,14 +496,14 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                     ChatInfo.info(player, "Reloading...");
                     try {
                         ChatInfo.info(player, "1/4: Reloading files...");
-                        DiscoverMain.getInstance().reloadFiles();
+                        DiscoverAreasPlugin.getInstance().reloadFiles();
                         ChatInfo.info(player, "2/4: Reloading areas...");
-                        DiscoverMain.getInstance().getCache().clear();
-                        DiscoverMain.getInstance().cacheAreas();
+                        DiscoverAreasPlugin.getInstance().getCache().clear();
+                        DiscoverAreasPlugin.getInstance().cacheAreas();
                         ChatInfo.info(player, "3/4: Reloading players...");
-                        DiscoverMain.getInstance().getPlayers().values().forEach(DiscoverPlayer::reload);
+                        DiscoverAreasPlugin.getInstance().getPlayers().values().forEach(DiscoverPlayer::reload);
                         ChatInfo.info(player, "4/4: Reloading menus...");
-                        DiscoverMain.getMenuManager().updateMenus();
+                        DiscoverAreasPlugin.getMenuManager().updateMenus();
 
                         ChatInfo.success(player, "Successfully reloaded all files.");
                         break;
@@ -545,25 +544,25 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
             case "add":
             case "create":
                 if (args.length == 2) {
-                    DiscoverMain.getRegionContainer().get(new BukkitWorld(player.getWorld())).getRegions().values().forEach(region -> {
-                        if (!DiscoverMain.getInstance().getCache().stream().anyMatch(area -> area.getRegion() == region))
+                    DiscoverAreasPlugin.getRegionContainer().get(new BukkitWorld(player.getWorld())).getRegions().values().forEach(region -> {
+                        if (!DiscoverAreasPlugin.getInstance().getCache().stream().anyMatch(area -> area.getRegion() == region))
                             out.add(region.getId());
                     });
                 }
                 break;
             case "remove":
             case "delete":
-                if (args.length == 2) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                if (args.length == 2) DiscoverAreasPlugin.getInstance().getCache().forEach(area -> out.add(area.getName()));
                 break;
             case "setexp":
             case "setxp":
-                if (args.length == 2) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                if (args.length == 2) DiscoverAreasPlugin.getInstance().getCache().forEach(area -> out.add(area.getName()));
                 break;
             case "reset":
                 if (args.length == 2) Bukkit.getOnlinePlayers().forEach(p -> out.add(p.getName()));
                 break;
             case "setdesc":
-                if (args.length == 2) DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                if (args.length == 2) DiscoverAreasPlugin.getInstance().getCache().forEach(area -> out.add(area.getName()));
                 break;
             case "command":
                 if (args.length == 2) {
@@ -576,15 +575,15 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                     switch (args[1].toLowerCase()) {
                         case "remove":
                             if (args.length == 4)
-                                DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                                DiscoverAreasPlugin.getInstance().getCache().forEach(area -> out.add(area.getName()));
                             break;
                         case "add":
                         case "list":
-                            DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                            DiscoverAreasPlugin.getInstance().getCache().forEach(area -> out.add(area.getName()));
                             break;
                         case "edit":
                             if (args.length == 4)
-                                DiscoverMain.getInstance().getCache().forEach(area -> out.add(area.getName()));
+                                DiscoverAreasPlugin.getInstance().getCache().forEach(area -> out.add(area.getName()));
                             break;
                     }
                 }
@@ -594,7 +593,7 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
     }
 
     private void showHelp(Player p) {
-        DiscoverMain.getConfiguration().getStringList("messages.help").forEach(s -> p.sendMessage(ChatColor.translateAlternateColorCodes('&', s)));
+        DiscoverAreasPlugin.getConfiguration().getStringList("messages.help").forEach(s -> p.sendMessage(ChatColor.translateAlternateColorCodes('&', s)));
     }
 
 }

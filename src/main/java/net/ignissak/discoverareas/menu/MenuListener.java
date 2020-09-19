@@ -1,6 +1,6 @@
 package net.ignissak.discoverareas.menu;
 
-import net.ignissak.discoverareas.DiscoverMain;
+import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.menu.items.MenuItem;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -18,7 +18,7 @@ public class MenuListener implements Listener {
             return;
         }
         Player p = (Player) e.getWhoClicked();
-        Menu menu = DiscoverMain.getMenuManager().getMenuByTitle(e.getView().getTitle());
+        Menu menu = DiscoverAreasPlugin.getMenuManager().getMenuByTitle(e.getView().getTitle());
         if (menu == null) {
             return;
         }
