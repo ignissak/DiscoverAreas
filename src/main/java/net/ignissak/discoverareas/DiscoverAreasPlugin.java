@@ -88,7 +88,7 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
                 if (getConfiguration().getBoolean("general.update-notify")) {
                     getSmartLogger().info("---------------------------------");
                     getSmartLogger().info("There is a new update available - v" + spigotVersion + ".");
-                    getSmartLogger().info("https://www.spigotmc.org/resources/discoverareas-1-12." + this.resourceID + "/");
+                    getSmartLogger().info("https://www.spigotmc.org/resources/discoverareas-1-14." + this.resourceID + "/");
                     getSmartLogger().info("---------------------------------");
                 }
                 this.updateAvailable = true;

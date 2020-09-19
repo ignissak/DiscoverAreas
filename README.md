@@ -3,7 +3,7 @@ DiscoverAreas is a plugin that allows Minecraft server admins to set up simple d
 These areas can be discovered by players and can get a custom amount of experience etc.
 
 ## How to install?
-Head over to [Spigot page](https://www.spigotmc.org/resources/discoverareas-1-12.72410/) and download the latest version of plugin.  
+Head over to [Spigot page](https://www.spigotmc.org/resources/discoverareas-1-14.72410/) and download the latest version of plugin.  
 Plugin supports Spigot servers with a **version later than 1.14**, older versions are not and will not be supported.
 
 ## Compiling plugin

@@ -34,7 +34,7 @@ public class DiscoverManager implements Listener {
                 Bukkit.getScheduler().runTaskLater(DiscoverAreasPlugin.getInstance(), () -> {
                     player.sendMessage(ChatColor.RED + "Your servers is running out-of-date version of DiscoverAreas (" + DiscoverAreasPlugin.getInstance().getDescription().getVersion() + ").");
                     player.sendMessage(ChatColor.RED + "Download new version (" + DiscoverAreasPlugin.getInstance().getNewVersion() + ") on spigot page: ");
-                    player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-12." + DiscoverAreasPlugin.getInstance().getResourceID() + "/");
+                    player.sendMessage(ChatColor.RED + "https://www.spigotmc.org/resources/discoverareas-1-14." + DiscoverAreasPlugin.getInstance().getResourceID() + "/");
                     player.playSound(player.getLocation(), Sound.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_ON, 1, 1);
                 }, 40);
             }
