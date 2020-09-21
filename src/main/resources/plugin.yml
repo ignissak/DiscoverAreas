@@ -1,14 +1,14 @@
 name: DiscoverAreas
 version: 1.7.0-SNAPSHOT
 load: POSTWORLD
-main: net.ignissak.discoverareas.DiscoverMain
+main: net.ignissak.discoverareas.DiscoverAreasPlugin
 api-version: "1.14"
 depend: [WorldGuard]
 authors: [iGniSsak]
 commands:
   area:
     usage: /area
-    description: General command
+    description: General command'm
   ".areas":
     usage: /.areas
     description: Admin menu
