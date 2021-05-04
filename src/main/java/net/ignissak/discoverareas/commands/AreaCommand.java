@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.objects.Area;
+import net.ignissak.discoverareas.utils.AreaUtils;
 import net.ignissak.discoverareas.utils.ChatInfo;
 import net.ignissak.discoverareas.utils.chatinput.ChatInput;
 import net.ignissak.discoverareas.utils.chatinput.ChatInputType;
@@ -22,10 +23,8 @@ import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
@@ -73,13 +72,14 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                             }
 
                             RegionManager rm = DiscoverAreasPlugin.getRegionContainer().get(new BukkitWorld(w));
+                            assert rm != null;
                             if (!rm.hasRegion(regionName)) {
                                 ChatInfo.error(player, "Could not find region '" + regionName + "' in this world.");
                                 break;
                             }
 
                             ProtectedRegion region = rm.getRegion(regionName);
-                            Area area = new Area(region, w, name, "Default description - change in config.", 0, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, new ArrayList<>(), System.currentTimeMillis());
+                            Area area = new Area(AreaUtils.getNextAreaId(), region, w, name, "Default description - change in config.", 0, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, new ArrayList<>(), System.currentTimeMillis());
 
                             area.addToCache();
                             DiscoverAreasPlugin.getMenuManager().updateMenus();

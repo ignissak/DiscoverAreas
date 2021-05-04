@@ -3,6 +3,7 @@ package net.ignissak.discoverareas;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import net.ignissak.discoverareas.commands.AdminAreasCommand;
 import net.ignissak.discoverareas.commands.AreaCommand;
@@ -148,6 +149,10 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
         return CustomFiles.getDataFile();
     }
 
+    public static YamlFile getAreasFile() {
+        return CustomFiles.getAreasFile();
+    }
+
     public List<Area> getCache() {
         return cache;
     }
@@ -206,43 +211,46 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
     }
 
     public void cacheAreas() {
-        ConfigurationSection cs = getConfiguration().getConfigurationSection("areas");
-        if (cs.getKeys(false).size() <= 0) {
+        if (getAreasFile().getKeys(false).size() <= 0) {
             getSmartLogger().info("There are no areas defined.");
             return;
         }
-        cs.getKeys(false).forEach(key -> {
+
+        getAreasFile().getKeys(false).forEach(id -> {
             try {
-                ConfigurationSection config = cs.getConfigurationSection(key);
-                World w = Bukkit.getWorld(config.getString("world", "world"));
-                RegionManager rm = getRegionContainer().get(new BukkitWorld(w));
-                if (!rm.hasRegion(config.getString("region"))) {
-                    getSmartLogger().error("Invalid region name '" + config.getString("region") + "' in world '" + config.getString("world") + "'.");
+                ConfigurationSection section = getAreasFile().getConfigurationSection(id);
+
+                String worldName = section.getString("world", "world");
+                World world = Bukkit.getWorld(worldName);
+
+                assert world != null : "Could not get world '" + worldName + "'.";
+
+                RegionManager regionManager = getRegionContainer().get(new BukkitWorld(world));
+
+                assert regionManager != null : "Could not get RegionManager for world '" + worldName + "'.";
+
+                String regionName = section.getString("region", "region");
+                if (!regionManager.hasRegion(regionName)) {
+                    getSmartLogger().error("Invalid region name '" + regionName + "' in world '" + worldName + "'.");
                     return;
                 }
-                if (Bukkit.getWorld(config.getString("world")) == null) {
-                    getSmartLogger().error("Invalid world name '" + config.getString("world") + "' for area '" + key + "'.");
-                    return;
-                }
-                try {
-                    Sound s = Sound.valueOf(config.getString("sound"));
-                    Area a = new Area(rm.getRegion(config.getString("region")), w, key, config.getString("description"), config.getInt("xp"), s, config.getStringList("commands"), config.getLong("created"));
-                    this.cache.add(a);
-                } catch (IllegalArgumentException e) {
-                    getSmartLogger().error("Invalid sound name '" + config.getString("sound") + "' for area '" + key + "'.");
-                    return;
-                }
-            } catch (NullPointerException e) {
-                getSmartLogger().error("Error while loading area: " + key);
+
+                String name = section.getString("name", "Default");
+                ProtectedRegion region = regionManager.getRegion(regionName);
+                String description = section.getString("description", "Default description - change in config.");
+                int xp = section.getInt("xp", 0);
+                Sound sound = Sound.valueOf(section.getString("sound", "ENTITY_EXPERIENCE_ORB_PICKUP"));
+                List<String> commands = section.getStringList("commands");
+                long created = section.getLong("created");
+
+                Area area = new Area(Integer.parseInt(id), region, world, name, description, xp, sound, commands, created);
+                area.addToCache();
+            } catch (Exception e) {
+                getSmartLogger().error("Could not cache areas because some errors occured.");
                 e.printStackTrace();
             }
         });
-        if (this.cache.size() > 0) {
-            getSmartLogger().success("Successfully cached " + this.cache.size() + " areas.");
-        } else {
-            getSmartLogger().error("Could not cache areas, because some errors occured.");
-        }
-        return;
+
     }
 
     private void initItemStacks() {

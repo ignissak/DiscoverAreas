@@ -9,8 +9,8 @@ import net.ignissak.discoverareas.utils.TextComponentBuilder;
 import net.ignissak.discoverareas.utils.title.Title;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.simpleyaml.configuration.ConfigurationSection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +18,7 @@ import java.util.UUID;
 
 public class Area {
 
+    private int id;
     private ProtectedRegion region;
     private World world;
     private String name, description;
@@ -41,7 +42,8 @@ public class Area {
      * @param rewardCommands Reward command of area
      */
 
-    public Area(ProtectedRegion region, World world, String name, String description, int xp, Sound discoverySound, List<String> rewardCommands, long createdAt) {
+    public Area(int id, ProtectedRegion region, World world, String name, String description, int xp, Sound discoverySound, List<String> rewardCommands, long createdAt) {
+        this.id = id;
         this.region = region;
         this.world = world;
         this.name = name;
@@ -191,19 +193,9 @@ public class Area {
     }
 
     private void addData() {
-        DiscoverAreasPlugin.getConfiguration().createSection("areas." + this.getName());
-        DiscoverAreasPlugin.getInstance().saveFiles();
-        this.configurationSection = DiscoverAreasPlugin.getConfiguration().getConfigurationSection("areas." + getName());
+        DiscoverAreasPlugin.getConfiguration().createSection(String.valueOf(id));
 
-        configurationSection.set("world", getWorld().getName());
-        configurationSection.set("region", getRegion().getId());
-        configurationSection.set("description", getDescription());
-        configurationSection.set("xp", getXp());
-        configurationSection.set("commands", getRewardCommands());
-        configurationSection.set("sound", getDiscoverySound().toString());
-        configurationSection.set("created", getCreatedAt());
-
-        DiscoverAreasPlugin.getInstance().saveFiles();
+        this.updateData();
     }
 
     /**
@@ -211,14 +203,16 @@ public class Area {
      */
 
     public void updateData() {
-        this.configurationSection = DiscoverAreasPlugin.getConfiguration().getConfigurationSection("areas." + getName());
+        this.configurationSection = DiscoverAreasPlugin.getConfiguration().getConfigurationSection(String.valueOf(id));
 
+        configurationSection.set("name", name);
         configurationSection.set("world", getWorld().getName());
         configurationSection.set("region", getRegion().getId());
         configurationSection.set("description", getDescription());
         configurationSection.set("xp", getXp());
         configurationSection.set("commands", getRewardCommands());
         configurationSection.set("sound", getDiscoverySound().toString());
+        configurationSection.set("created", getCreatedAt());
 
         DiscoverAreasPlugin.getInstance().saveFiles();
         DiscoverAreasPlugin.getMenuManager().updateMenus();
@@ -380,5 +374,9 @@ public class Area {
 
     public boolean hasDiscovered(DiscoverPlayer player) {
         return player.hasDiscovered(this.getName());
+    }
+
+    public int getId() {
+        return id;
     }
 }
