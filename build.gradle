@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
-group = pluginGroup
-version = pluginVersion
+group = 'net.ignissak.discoverareas'
+version = '2.0.0B'
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
@@ -19,6 +19,7 @@ repositories {
     }
     maven { url "https://maven.enginehub.org/repo/" }
     maven { url 'https://packages.craftmania.cz/repository/craftmania/' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -26,6 +27,10 @@ dependencies {
 
     compile group: 'org.apache.maven', name: 'maven-artifact', version: '3.0.3'
     compile 'org.jetbrains:annotations:16.0.2'
+    compile 'com.zaxxer:HikariCP:4.0.3'
+
+    implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.7.2'
+
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.3'
 }
 

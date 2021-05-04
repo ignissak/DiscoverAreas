@@ -1,81 +1,71 @@
 package net.ignissak.discoverareas.files;
 
 import net.ignissak.discoverareas.DiscoverAreasPlugin;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.simpleyaml.configuration.file.YamlFile;
+import org.simpleyaml.exceptions.InvalidConfigurationException;
 
 import java.io.File;
 import java.io.IOException;
 
 public class CustomFiles {
 
-    private static File configFile, dataFile;
-    private static FileConfiguration configConfig, dataConfig;
+    private static YamlFile configFile, dataFile, areasFile;
 
     public CustomFiles() {
-        this.createFiles();
+        try {
+            this.createFiles();
+        } catch (IOException | InvalidConfigurationException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void createFiles() {
-        configFile = new File(DiscoverAreasPlugin.getInstance().getDataFolder(), "config.yml");
+    private void createFiles() throws IOException, InvalidConfigurationException {
+        configFile = new YamlFile(new File(DiscoverAreasPlugin.getInstance().getDataFolder(), "config.yml"));
         if (!configFile.exists()) {
-            configFile.getParentFile().mkdirs();
+            configFile.createNewFile(true);
             DiscoverAreasPlugin.getInstance().saveResource("config.yml", false);
         }
+        configFile.load();
 
-        configConfig = new YamlConfiguration();
-        try {
-            configConfig.load(configFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        dataFile = new File(DiscoverAreasPlugin.getInstance().getDataFolder(), "data.yml");
+        dataFile = new YamlFile(new File(DiscoverAreasPlugin.getInstance().getDataFolder(), "data.yml"));
         if (!dataFile.exists()) {
-            dataFile.getParentFile().mkdirs();
-            DiscoverAreasPlugin.getInstance().saveResource("data.yml", false);
+            // TODO: Disable migration
         }
+        dataFile.load();
 
-        dataConfig = new YamlConfiguration();
-        try {
-            dataConfig.load(dataFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
+        areasFile = new YamlFile(new File(DiscoverAreasPlugin.getInstance().getDataFolder(), "areas.yml"));
+        if (!areasFile.exists()) {
+            areasFile.createNewFile(true);
         }
+        areasFile.load();
     }
 
     public void saveFiles() {
         try {
-            this.getConfigConfig().save(configFile);
-            this.getDataConfig().save(dataFile);
+            configFile.save();
+            dataFile.save();
+            areasFile.save();
         } catch (IOException e) {
             DiscoverAreasPlugin.getSmartLogger().severe("Could not save files.");
             e.printStackTrace();
         }
     }
 
-    public void reloadFiles() {
-        configConfig = new YamlConfiguration();
-        try {
-            configConfig.load(configFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        dataConfig = new YamlConfiguration();
-        try {
-            dataConfig.load(dataFile);
-        } catch (IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
+    public static YamlFile getConfigFile() {
+        return configFile;
     }
 
-    public FileConfiguration getConfigConfig() {
-        return configConfig;
+    /**
+     * Data files are deprecated. Data are now stored in database.
+     * @since 2.0.0
+     * @deprecated
+     */
+    @Deprecated
+    public static YamlFile getDataFile() {
+        return dataFile;
     }
 
-    public FileConfiguration getDataConfig() {
-        return dataConfig;
+    public static YamlFile getAreasFile() {
+        return areasFile;
     }
 }

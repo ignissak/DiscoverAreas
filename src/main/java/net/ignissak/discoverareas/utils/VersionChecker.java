@@ -25,7 +25,7 @@ public class VersionChecker {
                 Scanner scanner = new Scanner(url.openStream());
                 while (scanner.hasNext()) {
                     if (plugin.getDescription().getVersion().equalsIgnoreCase(scanner.next())) {
-                        DiscoverAreasPlugin.getSmartLogger().severe("This version of plugin is no longer supported, please upgrade your version to version listed on resource page.");
+                        DiscoverAreasPlugin.getSmartLogger().severe("This version of plugin is no longer supported, please upgrade your version to later version.");
                         plugin.getPluginLoader().disablePlugin(plugin);
                         return;
                     }

@@ -1,5 +1,5 @@
 name: DiscoverAreas
-version: 1.7.0-SNAPSHOT
+version: @version@
 load: POSTWORLD
 main: net.ignissak.discoverareas.DiscoverAreasPlugin
 api-version: "1.14"

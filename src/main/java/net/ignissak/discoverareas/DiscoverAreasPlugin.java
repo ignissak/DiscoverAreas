@@ -14,16 +14,19 @@ import net.ignissak.discoverareas.files.CustomFiles;
 import net.ignissak.discoverareas.menu.MenuManager;
 import net.ignissak.discoverareas.objects.Area;
 import net.ignissak.discoverareas.objects.ServerVersion;
+import net.ignissak.discoverareas.sql.Connector;
+import net.ignissak.discoverareas.sql.mysql.MySQLConnector;
+import net.ignissak.discoverareas.sql.sqlite.SQLiteConnector;
 import net.ignissak.discoverareas.utils.*;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.simpleyaml.configuration.ConfigurationSection;
+import org.simpleyaml.configuration.file.YamlFile;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -32,7 +35,7 @@ import java.util.List;
 
 public final class DiscoverAreasPlugin extends JavaPlugin {
 
-    private int resourceID = 72410;
+    private final int resourceID = 72410;
 
     private static DiscoverAreasPlugin instance;
     private static SmartLogger smartLogger;
@@ -43,6 +46,8 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
     private ItemBuilder undiscovered, discovered, previous, next;
     private boolean updateAvailable = false;
     private String newVersion;
+
+    private static Connector connector;
 
     private static final HashMap<Player, DiscoverPlayer> players = new HashMap<>();
     private final List<Area> cache = new ArrayList<>();
@@ -109,6 +114,8 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
         } catch (Exception e) {
             getSmartLogger().error("Could not initialize metrics.");
         }
+
+        this.setupDatabase();
     }
 
     @Override
@@ -132,12 +139,13 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
         return regionContainer;
     }
 
-    public static FileConfiguration getConfiguration() {
-        return customFiles.getConfigConfig();
+    public static YamlFile getConfiguration() {
+        return CustomFiles.getConfigFile();
     }
 
-    public static FileConfiguration getData() {
-        return customFiles.getDataConfig();
+    @Deprecated
+    public static YamlFile getData() {
+        return CustomFiles.getDataFile();
     }
 
     public List<Area> getCache() {
@@ -179,10 +187,6 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
 
     public void saveFiles() {
         customFiles.saveFiles();
-    }
-
-    public void reloadFiles() {
-        customFiles.reloadFiles();
     }
 
     private void hookWorldGuard() {
@@ -322,5 +326,14 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
 
     public ItemBuilder getNext() {
         return next;
+    }
+
+    private void setupDatabase() {
+        String type = getConfiguration().getString("sql.type", "SQLite");
+        if (type.equalsIgnoreCase("SQLite")) {
+            connector = new SQLiteConnector();
+        } else {
+            connector = new MySQLConnector();
+        }
     }
 }
