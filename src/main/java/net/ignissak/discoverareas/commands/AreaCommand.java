@@ -6,14 +6,11 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.objects.Area;
-import net.ignissak.discoverareas.utils.AreaUtils;
+import net.ignissak.discoverareas.utils.Utils;
 import net.ignissak.discoverareas.utils.ChatInfo;
 import net.ignissak.discoverareas.utils.chatinput.ChatInput;
 import net.ignissak.discoverareas.utils.chatinput.ChatInputType;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
 
@@ -78,8 +74,14 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                                 break;
                             }
 
+                            Material material = Material.BOOK;
+
+                            if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
+                                material = player.getInventory().getItemInMainHand().getType();
+                            }
+
                             ProtectedRegion region = rm.getRegion(regionName);
-                            Area area = new Area(AreaUtils.getNextAreaId(), region, w, name, "Default description - change in config.", 0, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, new ArrayList<>(), System.currentTimeMillis());
+                            Area area = new Area(Utils.getNextAreaId(), region, w, name, "Default description - change in config.", 0, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, material, new ArrayList<>(), System.currentTimeMillis());
 
                             area.addToCache();
                             DiscoverAreasPlugin.getMenuManager().updateMenus();
@@ -495,14 +497,12 @@ public class AreaCommand implements CommandExecutor, TabCompleter, Listener {
                 case "reload":
                     ChatInfo.info(player, "Reloading...");
                     try {
-                        ChatInfo.info(player, "1/4: Reloading files...");
-                        DiscoverAreasPlugin.getInstance().reloadFiles();
-                        ChatInfo.info(player, "2/4: Reloading areas...");
+                        ChatInfo.info(player, "1/3: Reloading areas...");
                         DiscoverAreasPlugin.getInstance().getCache().clear();
                         DiscoverAreasPlugin.getInstance().cacheAreas();
-                        ChatInfo.info(player, "3/4: Reloading players...");
+                        ChatInfo.info(player, "2/3: Reloading players...");
                         DiscoverAreasPlugin.getInstance().getPlayers().values().forEach(DiscoverPlayer::reload);
-                        ChatInfo.info(player, "4/4: Reloading menus...");
+                        ChatInfo.info(player, "3/3: Reloading menus...");
                         DiscoverAreasPlugin.getMenuManager().updateMenus();
 
                         ChatInfo.success(player, "Successfully reloaded all files.");

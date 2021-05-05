@@ -13,6 +13,8 @@ import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.events.WGRegionEventsListener;
 import net.ignissak.discoverareas.files.CustomFiles;
 import net.ignissak.discoverareas.menu.MenuManager;
+import net.ignissak.discoverareas.migration.OldAreasMigration;
+import net.ignissak.discoverareas.migration.OldDataMigration;
 import net.ignissak.discoverareas.objects.Area;
 import net.ignissak.discoverareas.objects.ServerVersion;
 import net.ignissak.discoverareas.sql.Connector;
@@ -103,6 +105,9 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
         });
 
         new VersionChecker(this, "https://raw.githubusercontent.com/ignissak/DiscoverAreas/master/unsupported_versions").checkVersion();
+
+        new OldAreasMigration().migrate();
+        new OldDataMigration().migrate();
 
         cacheAreas();
 
@@ -240,10 +245,11 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
                 String description = section.getString("description", "Default description - change in config.");
                 int xp = section.getInt("xp", 0);
                 Sound sound = Sound.valueOf(section.getString("sound", "ENTITY_EXPERIENCE_ORB_PICKUP"));
+                Material material = Material.valueOf(section.getString("material", "BOOK"));
                 List<String> commands = section.getStringList("commands");
                 long created = section.getLong("created");
 
-                Area area = new Area(Integer.parseInt(id), region, world, name, description, xp, sound, commands, created);
+                Area area = new Area(Integer.parseInt(id), region, world, name, description, xp, sound, material, commands, created);
                 area.addToCache();
             } catch (Exception e) {
                 getSmartLogger().error("Could not cache areas because some errors occured.");
@@ -343,5 +349,7 @@ public final class DiscoverAreasPlugin extends JavaPlugin {
         } else {
             connector = new MySQLConnector();
         }
+
+        connector.setupHikari();
     }
 }

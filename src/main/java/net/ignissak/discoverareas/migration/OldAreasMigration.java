@@ -5,8 +5,9 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.objects.Area;
-import net.ignissak.discoverareas.utils.AreaUtils;
+import net.ignissak.discoverareas.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.simpleyaml.configuration.ConfigurationSection;
@@ -17,7 +18,7 @@ public class OldAreasMigration {
 
     // TODO
     public void migrate() {
-        if (DiscoverAreasPlugin.getConfiguration().getConfigurationSection("areas").getKeys(false).size() > 0) {
+        if (DiscoverAreasPlugin.getConfiguration().contains("areas")) {
             // Let's migrate
             DiscoverAreasPlugin.getSmartLogger().info("Starting areas migration...");
 
@@ -42,15 +43,16 @@ public class OldAreasMigration {
                         return;
                     }
 
-                    int id = AreaUtils.getNextAreaId();
+                    int id = Utils.getNextAreaId();
                     ProtectedRegion region = regionManager.getRegion(regionName);
                     String description = section.getString("description", "Default description - change in config.");
                     int xp = section.getInt("xp", 0);
                     Sound sound = Sound.valueOf(section.getString("sound", "ENTITY_EXPERIENCE_ORB_PICKUP"));
+                    Material material = Material.valueOf(section.getString("material", "BOOK"));
                     List<String> commands = section.getStringList("commands");
                     long created = section.getLong("created");
 
-                    Area area = new Area(id, region, world, name, description, xp, sound, commands, created);
+                    Area area = new Area(id, region, world, name, description, xp, sound, material, commands, created);
                     area.addToCache();
 
                     DiscoverAreasPlugin.getConfiguration().remove("areas." + name);

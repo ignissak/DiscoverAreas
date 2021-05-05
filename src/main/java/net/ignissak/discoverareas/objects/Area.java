@@ -2,6 +2,7 @@ package net.ignissak.discoverareas.objects;
 
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import lombok.Data;
 import net.ignissak.discoverareas.DiscoverAreasPlugin;
 import net.ignissak.discoverareas.discover.DiscoverPlayer;
 import net.ignissak.discoverareas.utils.ChatInfo;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Data
 public class Area {
 
     private int id;
@@ -25,6 +27,7 @@ public class Area {
     private int xp;
     private List<String> rewardCommands;
     private Sound discoverySound;
+    private Material material;
     private ConfigurationSection configurationSection;
     private List<UUID> discoveredBy = new ArrayList<>();
     private long createdAt;
@@ -42,119 +45,20 @@ public class Area {
      * @param rewardCommands Reward command of area
      */
 
-    public Area(int id, ProtectedRegion region, World world, String name, String description, int xp, Sound discoverySound, List<String> rewardCommands, long createdAt) {
+    public Area(int id, ProtectedRegion region, World world, String name, String description, int xp, Sound discoverySound, Material material, List<String> rewardCommands, long createdAt) {
         this.id = id;
         this.region = region;
         this.world = world;
         this.name = name;
         this.description = description;
         this.xp = xp;
+        this.material = material;
         this.discoverySound = discoverySound;
         this.rewardCommands = rewardCommands;
         this.createdAt = createdAt;
 
         this.addData();
         this.initDiscoveredBy();
-    }
-
-    /**
-     * Returns region in which is area located
-     *
-     * @return ProtectedRegion object
-     */
-
-    public ProtectedRegion getRegion() {
-        return region;
-    }
-
-    /**
-     * Returns world in which is area located
-     *
-     * @return World object
-     */
-
-    public World getWorld() {
-        return world;
-    }
-
-    /**
-     * Returns List of reward commands
-     *
-     * @return Reward commands
-     */
-
-    public List<String> getRewardCommands() {
-        return rewardCommands;
-    }
-
-    /**
-     * Adds new reward command to the list
-     *
-     * @param s Command
-     */
-    public void addRewardCommand(String s) {
-        this.rewardCommands.add(s);
-    }
-
-    /**
-     * Returns name of area
-     *
-     * @return Name of area
-     */
-
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Returns number of experience player will get for discovery
-     *
-     * @return Number of experience
-     */
-
-    public int getXp() {
-        return xp;
-    }
-
-    /**
-     * Sets amount of reward experience
-     *
-     * @param xp New amount of experience
-     */
-
-    public void setXp(int xp) {
-        this.xp = xp;
-    }
-
-    /**
-     * Returns sound that player will hear after discovering area
-     *
-     * @return Sound of discovery
-     */
-
-    public Sound getDiscoverySound() {
-        return discoverySound;
-    }
-
-    /**
-     * Sets discovery sound to a new value
-     *
-     * @param discoverySound Desired sound
-     */
-
-    public void setDiscoverySound(Sound discoverySound) {
-        this.discoverySound = discoverySound;
-    }
-
-    /**
-     * Returns area description
-     *
-     * @return Description
-     */
-
-
-    public String getDescription() {
-        return description;
     }
 
     /**
@@ -168,32 +72,8 @@ public class Area {
         return discoveredBy;
     }
 
-    /**
-     * Returns the long when the area was created
-     *
-     * @return Time of creation
-     */
-
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * Sets description to a new value
-     *
-     * @param description New description
-     */
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    private ConfigurationSection getConfigurationSection() {
-        return configurationSection;
-    }
-
     private void addData() {
-        DiscoverAreasPlugin.getConfiguration().createSection(String.valueOf(id));
+        DiscoverAreasPlugin.getAreasFile().createSection(String.valueOf(id));
 
         this.updateData();
     }
@@ -203,7 +83,7 @@ public class Area {
      */
 
     public void updateData() {
-        this.configurationSection = DiscoverAreasPlugin.getConfiguration().getConfigurationSection(String.valueOf(id));
+        this.configurationSection = DiscoverAreasPlugin.getAreasFile().getConfigurationSection(String.valueOf(id));
 
         configurationSection.set("name", name);
         configurationSection.set("world", getWorld().getName());
@@ -215,7 +95,7 @@ public class Area {
         configurationSection.set("created", getCreatedAt());
 
         DiscoverAreasPlugin.getInstance().saveFiles();
-        DiscoverAreasPlugin.getMenuManager().updateMenus();
+        //DiscoverAreasPlugin.getMenuManager().updateMenus();
     }
 
     /**
@@ -374,9 +254,5 @@ public class Area {
 
     public boolean hasDiscovered(DiscoverPlayer player) {
         return player.hasDiscovered(this.getName());
-    }
-
-    public int getId() {
-        return id;
     }
 }

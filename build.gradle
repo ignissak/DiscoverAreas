@@ -1,3 +1,7 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.2.0'
+}
+
 apply plugin: 'java'
 
 group = 'net.ignissak.discoverareas'
@@ -30,20 +34,24 @@ dependencies {
     compile 'com.zaxxer:HikariCP:4.0.3'
 
     implementation 'me.carleslc.Simple-YAML:Simple-Yaml:1.7.2'
+    compile 'fr.minuskube.inv:smart-invs:1.2.7'
 
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.3'
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
 }
 
 import org.apache.tools.ant.filters.ReplaceTokens
 
 processResources {
     from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: version]
+        filter ReplaceTokens, tokens: [version: project.version]
     }
 }
 
-task compilePlugin(type: Jar) {
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
+shadowJar {
+    archiveBaseName = "DiscoverAreas"
+    archiveClassifier = null
+    archiveVersion = project.version
 }
-

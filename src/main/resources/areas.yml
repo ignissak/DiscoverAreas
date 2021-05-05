@@ -1,0 +1,20 @@
+1:
+  name: Default
+  world: world
+  region: test
+  item: BOOK
+  description: Default description - change in config.
+  xp: 0
+  commands: []
+  sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  created: 1600523705497
+
+#areas:
+#  Nejaký názov:
+#    world: world
+#    region: test
+#    description: Default description - change in config.
+#    xp: 0
+#    commands: []
+#    sound: ENTITY_EXPERIENCE_ORB_PICKUP
+#    created: 1600523705497

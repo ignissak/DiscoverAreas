@@ -1,6 +1,7 @@
 package net.ignissak.discoverareas.files;
 
 import net.ignissak.discoverareas.DiscoverAreasPlugin;
+import net.ignissak.discoverareas.migration.OldDataMigration;
 import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 
@@ -30,6 +31,7 @@ public class CustomFiles {
         dataFile = new YamlFile(new File(DiscoverAreasPlugin.getInstance().getDataFolder(), "data.yml"));
         if (!dataFile.exists()) {
             // TODO: Disable migration
+            OldDataMigration.migrate = false;
         }
         dataFile.load();
 

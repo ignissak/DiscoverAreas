@@ -121,8 +121,7 @@ public class ItemBuilder {
             meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             is.setItemMeta(meta);
-        } catch (Exception ex) {
-            //TODO: Main.getInstance().debug("Invalid flag: " + flag);
+        } catch (Exception ignored) {
         }
         return this;
     }
@@ -138,8 +137,7 @@ public class ItemBuilder {
             ItemMeta meta = is.getItemMeta();
             meta.addItemFlags(flag);
             is.setItemMeta(meta);
-        } catch (Exception ex) {
-            //TODO: Main.getInstance().debug("Invalid flag: " + flag);
+        } catch (Exception ignored) {
         }
         return this;
     }
@@ -155,8 +153,7 @@ public class ItemBuilder {
             ItemMeta meta = is.getItemMeta();
             meta.addItemFlags(ItemFlag.valueOf(flag));
             is.setItemMeta(meta);
-        } catch (Exception ex) {
-            //TODO: Main.getInstance().debug("Invalid flag: " + flag);
+        } catch (Exception ignored) {
         }
         return this;
     }
@@ -174,8 +171,7 @@ public class ItemBuilder {
             meta.addEnchant(Enchantment.DURABILITY, 0, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             is.setItemMeta(meta);
-        } catch (Exception ex) {
-            //TODO: Main.getInstance().debug("Invalid flag: " + flag);
+        } catch (Exception ignored) {
         }
         return this;
     }
@@ -210,9 +206,7 @@ public class ItemBuilder {
             if (im.hasLore()) {
                 lore = new ArrayList<>(im.getLore());
             }
-            for (String str : line.split("\n")) {
-                lore.add(str);
-            }
+            lore.addAll(Arrays.asList(line.split("\n")));
             setLore(lore);
         }
         return this;
@@ -246,7 +240,8 @@ public class ItemBuilder {
      * @return The cloned instance.
      */
     @Override
-    public ItemBuilder clone() {
+    public ItemBuilder clone() throws CloneNotSupportedException {
+        ItemBuilder clone = (ItemBuilder) super.clone();
         return new ItemBuilder(is);
     }
 
@@ -284,7 +279,7 @@ public class ItemBuilder {
             if (im.hasOwner()) {
                 return im.getOwner();
             }
-        } catch (ClassCastException expected) {
+        } catch (ClassCastException ignored) {
         }
         return "";
     }
@@ -295,7 +290,7 @@ public class ItemBuilder {
             if (im.hasOwner()) {
                 return im.getOwningPlayer();
             }
-        } catch (ClassCastException expected) {
+        } catch (ClassCastException ignored) {
         }
         return null;
     }

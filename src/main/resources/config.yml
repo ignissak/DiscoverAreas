@@ -94,17 +94,15 @@ menus:
 gui:
   list:
     admin:
-      material: BOOK
-      glowing: false
       displayname: "&a@area"
       lore:
+        - "&fID: &7@id"
         - "&fWorld: &7@world"
         - "&fRegion: &7@region"
         - "&fDescription:"
         - "&7@description"
         - "&6Click to open."
     discovered:
-      material: BOOK
       glowing: true
       displayname: "&a@area"
       lore:
@@ -112,7 +110,6 @@ gui:
         - "&fDescription:"
         - "&7@description"
     notdiscovered:
-      material: WRITABLE_BOOK
       glowing: false
       displayname: "&c@area"
       lore:
@@ -122,11 +119,9 @@ gui:
   previous:
     material: ARROW
     displayname: "&7Previous page"
-    lore: []
   next:
     material: ARROW
     displayname: "&7Next page"
-    lore: []
   stats:
     enabled: true
     material: PAPER
